@@ -23,8 +23,8 @@ This app allows customers to order food directly from their table by scanning a 
 
 We used modern and popular tools to build this app:
 - **React**: A library for building user interfaces.
+- **Next.js**: The React framework for the web.
 - **TypeScript**: A tool that helps catch errors in our code.
-- **Vite**: A tool that makes the app run very fast.
 - **Tailwind CSS**: A tool for styling the app and making it look good.
 
 ## How to Start
@@ -41,10 +41,13 @@ Follow these simple steps to run the project on your computer:
    npm run dev
    ```
 
-3. **Open in Browser**: You will see a link in the terminal (usually `http://localhost:5173`). Click it to open the app!
+3. **Open in Browser**: You will see a link in the terminal (usually `http://localhost:3000`). Click it to open the app!
 
 ## Project Structure
 
-- `src/components/Customer`: Code for the customer's view (Menu, Cart, etc.).
-- `src/components/Kitchen`: Code for the kitchen's view (Dashboard).
+- `src/app`: Main application code (App Router).
+  - `page.tsx`: Customer view.
+  - `kitchen/page.tsx`: Kitchen view.
+- `src/components`: Reusable UI components.
+- `src/contexts`: State management (Orders, Auth, Toast).
 - `src/data`: Contains the list of menu items.
