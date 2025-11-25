@@ -27,20 +27,20 @@ const Menu: React.FC<MenuProps> = ({ tableId }) => {
   }
 
   return (
-    <div className="min-h-screen pb-24 bg-[var(--background)]">
+    <div className="min-h-screen pb-24 bg-gray-50">
       {/* Categories Sticky Header */}
-      <div className="sticky top-16 z-20 bg-[var(--background)]/80 backdrop-blur-md border-b border-[rgba(0,0,0,0.05)] pt-4 pb-2 mb-6">
-        <div className="container overflow-x-auto no-scrollbar">
+      <div className="sticky top-16 z-20 bg-white/90 backdrop-blur-md border-b border-gray-100 pt-4 pb-2 mb-6">
+        <div className="container mx-auto px-4 overflow-x-auto no-scrollbar">
           <div className="flex gap-3 pb-2">
             {CATEGORIES.map(cat => (
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
                 className={`
-                  whitespace-nowrap px-6 py-2.5 rounded-full text-sm font-medium transition-all duration-300
+                  whitespace-nowrap px-5 py-2 rounded-full text-sm font-medium transition-all duration-200
                   ${activeCategory === cat.id
-                    ? 'bg-[var(--primary-gradient)] text-white shadow-md transform scale-105'
-                    : 'bg-white text-[var(--text-muted)] border border-gray-200 hover:border-[var(--primary)] hover:text-[var(--primary)]'
+                    ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
+                    : 'bg-white text-gray-600 border border-gray-200 hover:border-emerald-500 hover:text-emerald-600'
                   }
                 `}
               >
@@ -51,22 +51,22 @@ const Menu: React.FC<MenuProps> = ({ tableId }) => {
         </div>
       </div>
 
-      <div className="container">
+      <div className="container mx-auto px-4">
         {/* Section Header */}
         <div className="animate-slide-up mb-8">
           <div className="flex items-end justify-between mb-2">
-            <h2 className="font-heading text-4xl font-bold text-[var(--secondary)] capitalize">
+            <h2 className="text-3xl font-bold text-gray-900 capitalize tracking-tight">
               {CATEGORIES.find(c => c.id === activeCategory)?.label}
             </h2>
-            <span className="text-sm text-[var(--text-muted)] font-medium bg-white px-3 py-1 rounded-full border border-gray-100 shadow-sm">
+            <span className="text-sm text-gray-500 font-medium bg-white px-3 py-1 rounded-full border border-gray-100 shadow-sm">
               {filteredItems.length} items
             </span>
           </div>
-          <div className="h-1 w-20 bg-[var(--primary)] rounded-full"></div>
+          <div className="h-1 w-16 bg-emerald-500 rounded-full"></div>
         </div>
 
         {/* Menu Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-slide-up" style={{ animationDelay: '0.1s' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
           {filteredItems.map(item => (
             <MenuItem
               key={item.id}
