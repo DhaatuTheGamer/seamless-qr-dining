@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { menuItems, CATEGORIES, type MenuItem as MenuItemType } from '../../data/menu';
 import MenuItem from './MenuItem';
 import VirtualWaiter from './VirtualWaiter';
-import { useAuth } from '../../contexts/AuthContext';
-import { useOrder } from '../../contexts/OrderContext';
+
+
 import ItemDetail from './ItemDetail';
 import Cart from './Cart';
 import OrderHistory from './OrderHistory';
@@ -13,7 +13,7 @@ interface MenuProps {
 }
 
 const Menu: React.FC<MenuProps> = ({ tableId }) => {
-  const { cart } = useOrder();
+
   const [activeCategory, setActiveCategory] = useState('starters');
   const [selectedItem, setSelectedItem] = useState<MenuItemType | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);

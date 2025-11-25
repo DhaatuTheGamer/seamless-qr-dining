@@ -11,7 +11,7 @@ interface CartProps {
 }
 
 const Cart: React.FC<CartProps> = ({ onClose, tableId }) => {
-    const { cart, removeFromCart, updateCartQuantity, placeOrder } = useOrder();
+    const { cart, updateCartQuantity, placeOrder } = useOrder();
     const { user } = useAuth();
     const [isProcessing, setIsProcessing] = useState(false);
     const [orderPlaced, setOrderPlaced] = useState(false);

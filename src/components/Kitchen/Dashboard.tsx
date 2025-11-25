@@ -4,12 +4,12 @@ import Card from '../Shared/Card';
 import Button from '../Shared/Button';
 
 const Dashboard: React.FC = () => {
-    const { orders, updateOrderStatus, requests, completeRequest } = useOrder();
+    const { orders, updateOrderStatus, serviceRequests: requests, resolveServiceRequest: completeRequest } = useOrder();
     const [activeTab, setActiveTab] = useState<'orders' | 'requests'>('orders');
 
     // Sort orders by timestamp
     const activeOrders = orders.filter(o => o.status !== 'completed' && o.status !== 'delivered');
-    const completedOrders = orders.filter(o => o.status === 'completed' || o.status === 'delivered');
+
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -46,8 +46,8 @@ const Dashboard: React.FC = () => {
                     <button
                         onClick={() => setActiveTab('orders')}
                         className={`px-6 py-3 font-bold text-sm uppercase tracking-wider transition-all border-b-2 ${activeTab === 'orders'
-                                ? 'border-[var(--primary)] text-[var(--primary)]'
-                                : 'border-transparent text-gray-400 hover:text-white'
+                            ? 'border-[var(--primary)] text-[var(--primary)]'
+                            : 'border-transparent text-gray-400 hover:text-white'
                             }`}
                     >
                         Orders Queue
@@ -55,8 +55,8 @@ const Dashboard: React.FC = () => {
                     <button
                         onClick={() => setActiveTab('requests')}
                         className={`px-6 py-3 font-bold text-sm uppercase tracking-wider transition-all border-b-2 ${activeTab === 'requests'
-                                ? 'border-[var(--primary)] text-[var(--primary)]'
-                                : 'border-transparent text-gray-400 hover:text-white'
+                            ? 'border-[var(--primary)] text-[var(--primary)]'
+                            : 'border-transparent text-gray-400 hover:text-white'
                             }`}
                     >
                         Service Requests
