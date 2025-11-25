@@ -1,3 +1,4 @@
+"use client";
 import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { MenuItem } from '../data/menu';
 import { useToast } from './ToastContext';
@@ -62,14 +63,16 @@ export const useOrder = () => {
 export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const { addToast } = useToast();
     const [cart, setCart] = useState<CartItem[]>([]);
-    const [orders, setOrders] = useState<Order[]>(() => {
-        const saved = localStorage.getItem('orders');
-        return saved ? JSON.parse(saved) : [];
-    });
-    const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>(() => {
-        const saved = localStorage.getItem('serviceRequests');
-        return saved ? JSON.parse(saved) : [];
-    });
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
+
+    useEffect(() => {
+        const savedOrders = localStorage.getItem('orders');
+        if (savedOrders) setOrders(JSON.parse(savedOrders));
+
+        const savedRequests = localStorage.getItem('serviceRequests');
+        if (savedRequests) setServiceRequests(JSON.parse(savedRequests));
+    }, []);
 
     // Persist orders
     useEffect(() => {
