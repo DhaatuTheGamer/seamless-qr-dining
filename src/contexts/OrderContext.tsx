@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, type ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import type { MenuItem } from '../data/menu';
 import { useToast } from './ToastContext';
 
@@ -62,8 +62,39 @@ export const useOrder = () => {
 export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const { addToast } = useToast();
     const [cart, setCart] = useState<CartItem[]>([]);
-    const [orders, setOrders] = useState<Order[]>([]);
-    const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
+    const [orders, setOrders] = useState<Order[]>(() => {
+        const saved = localStorage.getItem('orders');
+        return saved ? JSON.parse(saved) : [];
+    });
+    const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>(() => {
+        const saved = localStorage.getItem('serviceRequests');
+        return saved ? JSON.parse(saved) : [];
+    });
+
+    // Persist orders
+    useEffect(() => {
+        localStorage.setItem('orders', JSON.stringify(orders));
+    }, [orders]);
+
+    // Persist service requests
+    useEffect(() => {
+        localStorage.setItem('serviceRequests', JSON.stringify(serviceRequests));
+    }, [serviceRequests]);
+
+    // Sync across tabs
+    useEffect(() => {
+        const handleStorageChange = (e: StorageEvent) => {
+            if (e.key === 'orders' && e.newValue) {
+                setOrders(JSON.parse(e.newValue));
+            }
+            if (e.key === 'serviceRequests' && e.newValue) {
+                setServiceRequests(JSON.parse(e.newValue));
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        return () => window.removeEventListener('storage', handleStorageChange);
+    }, []);
     const [isCartOpen, setIsCartOpen] = useState(false);
 
     const addToCart = (item: MenuItem, quantity: number, notes?: string) => {
