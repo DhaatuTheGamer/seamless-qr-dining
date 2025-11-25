@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { menuItems, CATEGORIES, type MenuItem as MenuItemType } from '../../data/menu';
+import { useOrder } from '../../contexts/OrderContext';
 import MenuItem from './MenuItem';
 import VirtualWaiter from './VirtualWaiter';
 import ItemDetail from './ItemDetail';
@@ -11,9 +12,9 @@ interface MenuProps {
 }
 
 const Menu: React.FC<MenuProps> = ({ tableId }) => {
+  const { isCartOpen, setIsCartOpen } = useOrder();
   const [activeCategory, setActiveCategory] = useState('starters');
   const [selectedItem, setSelectedItem] = useState<MenuItemType | null>(null);
-  const [isCartOpen, setIsCartOpen] = useState(false);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
   const filteredItems = menuItems.filter(item => item.category === activeCategory);

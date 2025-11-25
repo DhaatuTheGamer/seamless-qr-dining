@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import React, { createContext, useContext, useState, type ReactNode } from 'react';
 
 interface User {
     name: string;
@@ -25,18 +25,7 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    const [user, setUser] = useState<User | null>(() => {
-        const saved = localStorage.getItem('sqd_user');
-        return saved ? JSON.parse(saved) : null;
-    });
-
-    useEffect(() => {
-        if (user) {
-            localStorage.setItem('sqd_user', JSON.stringify(user));
-        } else {
-            localStorage.removeItem('sqd_user');
-        }
-    }, [user]);
+    const [user, setUser] = useState<User | null>(null);
 
     const login = (name: string, phone: string) => {
         setUser({ name, phone, isGuest: false });

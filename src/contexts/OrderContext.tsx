@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import React, { createContext, useContext, useState, type ReactNode } from 'react';
 import type { MenuItem } from '../data/menu';
 import { useToast } from './ToastContext';
 
@@ -45,6 +45,8 @@ interface OrderContextType {
     toggleOrderPayment: (orderId: string) => void;
     requestService: (tableId: string, type: ServiceRequestType, message?: string) => void;
     resolveServiceRequest: (requestId: string) => void;
+    isCartOpen: boolean;
+    setIsCartOpen: (isOpen: boolean) => void;
 }
 
 const OrderContext = createContext<OrderContextType | undefined>(undefined);
@@ -59,54 +61,10 @@ export const useOrder = () => {
 
 export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const { addToast } = useToast();
-    const [cart, setCart] = useState<CartItem[]>(() => {
-        const saved = localStorage.getItem('sqd_cart');
-        return saved ? JSON.parse(saved) : [];
-    });
-
-    const [orders, setOrders] = useState<Order[]>(() => {
-        const saved = localStorage.getItem('sqd_orders');
-        return saved ? JSON.parse(saved) : [];
-    });
-
-    const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>(() => {
-        const saved = localStorage.getItem('sqd_requests');
-        return saved ? JSON.parse(saved) : [];
-    });
-
-    // Persist to localStorage whenever state changes
-    useEffect(() => {
-        localStorage.setItem('sqd_cart', JSON.stringify(cart));
-    }, [cart]);
-
-    useEffect(() => {
-        localStorage.setItem('sqd_orders', JSON.stringify(orders));
-    }, [orders]);
-
-    useEffect(() => {
-        localStorage.setItem('sqd_requests', JSON.stringify(serviceRequests));
-    }, [serviceRequests]);
-
-    // Sync across tabs
-    useEffect(() => {
-        const handleStorageChange = (e: StorageEvent) => {
-            if (e.key === 'sqd_orders' && e.newValue) {
-                setOrders(JSON.parse(e.newValue));
-            }
-            if (e.key === 'sqd_requests' && e.newValue) {
-                setServiceRequests(JSON.parse(e.newValue));
-            }
-            // We generally don't sync cart across tabs for different users, 
-            // but for the same user session it might be desirable. 
-            // For this demo, let's sync it too so if they open a new tab it's there.
-            if (e.key === 'sqd_cart' && e.newValue) {
-                setCart(JSON.parse(e.newValue));
-            }
-        };
-
-        window.addEventListener('storage', handleStorageChange);
-        return () => window.removeEventListener('storage', handleStorageChange);
-    }, []);
+    const [cart, setCart] = useState<CartItem[]>([]);
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
+    const [isCartOpen, setIsCartOpen] = useState(false);
 
     const addToCart = (item: MenuItem, quantity: number, notes?: string) => {
         const newItem: CartItem = {
@@ -203,7 +161,9 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
             updateOrderStatus,
             toggleOrderPayment,
             requestService,
-            resolveServiceRequest
+            resolveServiceRequest,
+            isCartOpen,
+            setIsCartOpen
         }}>
             {children}
         </OrderContext.Provider>
