@@ -22,7 +22,7 @@ const Button: React.FC<ButtonProps> = ({
     const variants = {
         primary: 'btn-primary',
         outline: 'btn-outline',
-        ghost: 'text-[var(--primary)] hover:bg-[var(--primary-light)]'
+        ghost: 'btn-ghost'
     };
 
     const sizes = {
