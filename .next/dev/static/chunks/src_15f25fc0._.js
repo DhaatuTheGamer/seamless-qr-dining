@@ -107,8 +107,48 @@ const Dashboard = ()=>{
     _s();
     const { orders, updateOrderStatus, serviceRequests: requests, resolveServiceRequest: completeRequest } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$contexts$2f$OrderContext$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useOrder"])();
     const [activeTab, setActiveTab] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])('orders');
+    const prevOrdersLength = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRef"])(orders.length);
     // Sort orders by timestamp
     const activeOrders = orders.filter((o)=>o.status !== 'completed' && o.status !== 'delivered');
+    // Sound Alert Logic
+    const playNotificationSound = ()=>{
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            if (!AudioContext) return;
+            const ctx = new AudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(500, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1000, ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.1, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+            osc.start();
+            osc.stop(ctx.currentTime + 0.5);
+        } catch (e) {
+            console.error("Audio play failed", e);
+        }
+    };
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "Dashboard.useEffect": ()=>{
+            if (orders.length > prevOrdersLength.current) {
+                playNotificationSound();
+            }
+            prevOrdersLength.current = orders.length;
+        }
+    }["Dashboard.useEffect"], [
+        orders.length
+    ]);
+    const getOrderAgeStatus = (timestamp)=>{
+        const now = new Date().getTime();
+        const orderTime = new Date(timestamp).getTime();
+        const diffInMinutes = (now - orderTime) / 1000 / 60;
+        if (diffInMinutes > 15) return 'critical';
+        if (diffInMinutes > 5) return 'warning';
+        return 'normal';
+    };
     const getStatusColor = (status)=>{
         switch(status){
             case 'pending':
@@ -121,6 +161,30 @@ const Dashboard = ()=>{
                 return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
         }
     };
+    const getAgeBorderColor = (ageStatus)=>{
+        switch(ageStatus){
+            case 'critical':
+                return 'border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)] animate-pulse';
+            case 'warning':
+                return 'border-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.2)]';
+            default:
+                return 'border-transparent'; // Default border handled by glass-panel
+        }
+    };
+    // Force re-render every minute to update aging
+    const [, setTick] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(0);
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "Dashboard.useEffect": ()=>{
+            const timer = setInterval({
+                "Dashboard.useEffect.timer": ()=>setTick({
+                        "Dashboard.useEffect.timer": (t)=>t + 1
+                    }["Dashboard.useEffect.timer"])
+            }["Dashboard.useEffect.timer"], 60000);
+            return ({
+                "Dashboard.useEffect": ()=>clearInterval(timer)
+            })["Dashboard.useEffect"];
+        }
+    }["Dashboard.useEffect"], []);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
         className: "min-h-screen bg-[var(--secondary)] text-white p-6",
         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -136,7 +200,7 @@ const Dashboard = ()=>{
                                     children: "Kitchen Display System"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                    lineNumber: 28,
+                                    lineNumber: 88,
                                     columnNumber: 25
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -144,13 +208,13 @@ const Dashboard = ()=>{
                                     children: "LIVE ORDER MANAGEMENT"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                    lineNumber: 31,
+                                    lineNumber: 91,
                                     columnNumber: 25
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                            lineNumber: 27,
+                            lineNumber: 87,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -164,7 +228,7 @@ const Dashboard = ()=>{
                                             children: "Active Orders"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                            lineNumber: 35,
+                                            lineNumber: 95,
                                             columnNumber: 29
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -172,13 +236,13 @@ const Dashboard = ()=>{
                                             children: activeOrders.length
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                            lineNumber: 36,
+                                            lineNumber: 96,
                                             columnNumber: 29
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                    lineNumber: 34,
+                                    lineNumber: 94,
                                     columnNumber: 25
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -189,7 +253,7 @@ const Dashboard = ()=>{
                                             children: "Requests"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                            lineNumber: 39,
+                                            lineNumber: 99,
                                             columnNumber: 29
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -197,25 +261,25 @@ const Dashboard = ()=>{
                                             children: requests.filter((r)=>r.status === 'pending').length
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                            lineNumber: 40,
+                                            lineNumber: 100,
                                             columnNumber: 29
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                    lineNumber: 38,
+                                    lineNumber: 98,
                                     columnNumber: 25
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                            lineNumber: 33,
+                            lineNumber: 93,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                    lineNumber: 26,
+                    lineNumber: 86,
                     columnNumber: 17
                 }, ("TURBOPACK compile-time value", void 0)),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -227,7 +291,7 @@ const Dashboard = ()=>{
                             children: "Orders Queue"
                         }, void 0, false, {
                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                            lineNumber: 49,
+                            lineNumber: 109,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -240,19 +304,19 @@ const Dashboard = ()=>{
                                     children: requests.filter((r)=>r.status === 'pending').length
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                    lineNumber: 67,
+                                    lineNumber: 127,
                                     columnNumber: 29
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                            lineNumber: 58,
+                            lineNumber: 118,
                             columnNumber: 21
                         }, ("TURBOPACK compile-time value", void 0))
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                    lineNumber: 48,
+                    lineNumber: 108,
                     columnNumber: 17
                 }, ("TURBOPACK compile-time value", void 0)),
                 activeTab === 'orders' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -265,7 +329,7 @@ const Dashboard = ()=>{
                                 children: "👨‍🍳"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                lineNumber: 79,
+                                lineNumber: 139,
                                 columnNumber: 33
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -273,7 +337,7 @@ const Dashboard = ()=>{
                                 children: "No active orders"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                lineNumber: 80,
+                                lineNumber: 140,
                                 columnNumber: 33
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -281,16 +345,18 @@ const Dashboard = ()=>{
                                 children: "Waiting for new orders to arrive..."
                             }, void 0, false, {
                                 fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                lineNumber: 81,
+                                lineNumber: 141,
                                 columnNumber: 33
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                        lineNumber: 78,
+                        lineNumber: 138,
                         columnNumber: 29
-                    }, ("TURBOPACK compile-time value", void 0)) : activeOrders.map((order)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "glass-panel-dark rounded-xl p-0 flex flex-col h-full hover:border-[var(--primary)]/30 transition-colors duration-300 overflow-hidden group",
+                    }, ("TURBOPACK compile-time value", void 0)) : activeOrders.map((order)=>{
+                        const ageStatus = getOrderAgeStatus(order.timestamp);
+                        return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: `glass-panel-dark rounded-xl p-0 flex flex-col h-full hover:border-[var(--primary)]/30 transition-colors duration-300 overflow-hidden group border-2 ${getAgeBorderColor(ageStatus)}`,
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "p-5 border-b border-white/5 bg-white/[0.02]",
@@ -308,8 +374,8 @@ const Dashboard = ()=>{
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                                            lineNumber: 90,
-                                                            columnNumber: 49
+                                                            lineNumber: 152,
+                                                            columnNumber: 53
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                             className: "text-xs text-gray-500 font-mono",
@@ -319,54 +385,74 @@ const Dashboard = ()=>{
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                                            lineNumber: 91,
-                                                            columnNumber: 49
+                                                            lineNumber: 153,
+                                                            columnNumber: 53
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                                    lineNumber: 89,
-                                                    columnNumber: 45
+                                                    lineNumber: 151,
+                                                    columnNumber: 49
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                     className: `px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${getStatusColor(order.status)}`,
                                                     children: order.status
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                                    lineNumber: 93,
-                                                    columnNumber: 45
+                                                    lineNumber: 155,
+                                                    columnNumber: 49
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                            lineNumber: 88,
-                                            columnNumber: 41
+                                            lineNumber: 150,
+                                            columnNumber: 45
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                                            className: "flex items-center gap-2 text-xs text-gray-400",
+                                            className: "flex items-center justify-between text-xs text-gray-400",
                                             children: [
-                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
-                                                    children: "🕒"
-                                                }, void 0, false, {
+                                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                                                    className: "flex items-center gap-2",
+                                                    children: [
+                                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                            children: "🕒"
+                                                        }, void 0, false, {
+                                                            fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
+                                                            lineNumber: 161,
+                                                            columnNumber: 53
+                                                        }, ("TURBOPACK compile-time value", void 0)),
+                                                        new Date(order.timestamp).toLocaleTimeString([], {
+                                                            hour: '2-digit',
+                                                            minute: '2-digit'
+                                                        })
+                                                    ]
+                                                }, void 0, true, {
                                                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                                    lineNumber: 98,
-                                                    columnNumber: 45
+                                                    lineNumber: 160,
+                                                    columnNumber: 49
                                                 }, ("TURBOPACK compile-time value", void 0)),
-                                                new Date(order.timestamp).toLocaleTimeString([], {
-                                                    hour: '2-digit',
-                                                    minute: '2-digit'
-                                                })
+                                                ageStatus !== 'normal' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
+                                                    className: `font-bold ${ageStatus === 'critical' ? 'text-red-400' : 'text-yellow-400'}`,
+                                                    children: [
+                                                        Math.floor((new Date().getTime() - new Date(order.timestamp).getTime()) / 60000),
+                                                        "m ago"
+                                                    ]
+                                                }, void 0, true, {
+                                                    fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
+                                                    lineNumber: 165,
+                                                    columnNumber: 53
+                                                }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                            lineNumber: 97,
-                                            columnNumber: 41
+                                            lineNumber: 159,
+                                            columnNumber: 45
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                    lineNumber: 87,
-                                    columnNumber: 37
+                                    lineNumber: 149,
+                                    columnNumber: 41
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "flex-1 p-5 space-y-4 overflow-y-auto max-h-[300px] custom-scrollbar",
@@ -378,8 +464,8 @@ const Dashboard = ()=>{
                                                     children: item.quantity
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                                    lineNumber: 107,
-                                                    columnNumber: 49
+                                                    lineNumber: 176,
+                                                    columnNumber: 53
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     className: "flex-1",
@@ -389,8 +475,8 @@ const Dashboard = ()=>{
                                                             children: item.name
                                                         }, void 0, false, {
                                                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                                            lineNumber: 111,
-                                                            columnNumber: 53
+                                                            lineNumber: 180,
+                                                            columnNumber: 57
                                                         }, ("TURBOPACK compile-time value", void 0)),
                                                         item.notes && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                             className: "text-xs text-[var(--accent)] mt-2 italic bg-[var(--accent)]/10 p-2 rounded border border-[var(--accent)]/20",
@@ -401,25 +487,25 @@ const Dashboard = ()=>{
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                                            lineNumber: 113,
-                                                            columnNumber: 57
+                                                            lineNumber: 182,
+                                                            columnNumber: 61
                                                         }, ("TURBOPACK compile-time value", void 0))
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                                    lineNumber: 110,
-                                                    columnNumber: 49
+                                                    lineNumber: 179,
+                                                    columnNumber: 53
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, item.cartId, true, {
                                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                            lineNumber: 106,
-                                            columnNumber: 45
+                                            lineNumber: 175,
+                                            columnNumber: 49
                                         }, ("TURBOPACK compile-time value", void 0)))
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                    lineNumber: 104,
-                                    columnNumber: 37
+                                    lineNumber: 173,
+                                    columnNumber: 41
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "p-4 border-t border-white/5 bg-white/[0.02] grid grid-cols-1 gap-3",
@@ -431,8 +517,8 @@ const Dashboard = ()=>{
                                             children: "Start Preparing"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                            lineNumber: 125,
-                                            columnNumber: 45
+                                            lineNumber: 194,
+                                            columnNumber: 49
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         order.status === 'preparing' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Shared$2f$Button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
                                             size: "md",
@@ -441,8 +527,8 @@ const Dashboard = ()=>{
                                             children: "Mark Ready"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                            lineNumber: 134,
-                                            columnNumber: 45
+                                            lineNumber: 203,
+                                            columnNumber: 49
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         order.status === 'ready' && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Shared$2f$Button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
                                             size: "md",
@@ -452,24 +538,25 @@ const Dashboard = ()=>{
                                             children: "Complete Order"
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                            lineNumber: 143,
-                                            columnNumber: 45
+                                            lineNumber: 212,
+                                            columnNumber: 49
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                    lineNumber: 123,
-                                    columnNumber: 37
+                                    lineNumber: 192,
+                                    columnNumber: 41
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, order.id, true, {
                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                            lineNumber: 85,
-                            columnNumber: 33
-                        }, ("TURBOPACK compile-time value", void 0)))
+                            lineNumber: 147,
+                            columnNumber: 37
+                        }, ("TURBOPACK compile-time value", void 0));
+                    })
                 }, void 0, false, {
                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                    lineNumber: 76,
+                    lineNumber: 136,
                     columnNumber: 21
                 }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in",
@@ -481,7 +568,7 @@ const Dashboard = ()=>{
                                 children: "🔔"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                lineNumber: 161,
+                                lineNumber: 231,
                                 columnNumber: 33
                             }, ("TURBOPACK compile-time value", void 0)),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -489,13 +576,13 @@ const Dashboard = ()=>{
                                 children: "No pending requests"
                             }, void 0, false, {
                                 fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                lineNumber: 162,
+                                lineNumber: 232,
                                 columnNumber: 33
                             }, ("TURBOPACK compile-time value", void 0))
                         ]
                     }, void 0, true, {
                         fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                        lineNumber: 160,
+                        lineNumber: 230,
                         columnNumber: 29
                     }, ("TURBOPACK compile-time value", void 0)) : requests.map((req)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: `glass-panel-dark rounded-xl p-6 text-white relative overflow-hidden ${req.status === 'pending' ? 'border-l-4 border-l-[var(--accent)]' : 'opacity-50'}`,
@@ -511,7 +598,7 @@ const Dashboard = ()=>{
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                            lineNumber: 168,
+                                            lineNumber: 238,
                                             columnNumber: 41
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -522,13 +609,13 @@ const Dashboard = ()=>{
                                             })
                                         }, void 0, false, {
                                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                            lineNumber: 169,
+                                            lineNumber: 239,
                                             columnNumber: 41
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                    lineNumber: 167,
+                                    lineNumber: 237,
                                     columnNumber: 37
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -542,7 +629,7 @@ const Dashboard = ()=>{
                                                     children: req.type === 'water' ? '💧' : req.type === 'bill' ? '🧾' : req.type === 'help' ? '👋' : '💬'
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                                    lineNumber: 176,
+                                                    lineNumber: 246,
                                                     columnNumber: 45
                                                 }, ("TURBOPACK compile-time value", void 0)),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -550,13 +637,13 @@ const Dashboard = ()=>{
                                                     children: req.type
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                                    lineNumber: 179,
+                                                    lineNumber: 249,
                                                     columnNumber: 45
                                                 }, ("TURBOPACK compile-time value", void 0))
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                            lineNumber: 175,
+                                            lineNumber: 245,
                                             columnNumber: 41
                                         }, ("TURBOPACK compile-time value", void 0)),
                                         req.message && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -568,13 +655,13 @@ const Dashboard = ()=>{
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                            lineNumber: 184,
+                                            lineNumber: 254,
                                             columnNumber: 45
                                         }, ("TURBOPACK compile-time value", void 0))
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                    lineNumber: 174,
+                                    lineNumber: 244,
                                     columnNumber: 37
                                 }, ("TURBOPACK compile-time value", void 0)),
                                 req.status === 'pending' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Shared$2f$Button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
@@ -585,40 +672,40 @@ const Dashboard = ()=>{
                                     children: "Mark Completed"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                    lineNumber: 191,
+                                    lineNumber: 261,
                                     columnNumber: 41
                                 }, ("TURBOPACK compile-time value", void 0)) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                     className: "text-center text-xs text-green-400 font-bold uppercase tracking-widest border border-green-500/30 bg-green-500/10 py-2 rounded-lg",
                                     children: "Completed"
                                 }, void 0, false, {
                                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                                    lineNumber: 200,
+                                    lineNumber: 270,
                                     columnNumber: 41
                                 }, ("TURBOPACK compile-time value", void 0))
                             ]
                         }, req.id, true, {
                             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                            lineNumber: 166,
+                            lineNumber: 236,
                             columnNumber: 33
                         }, ("TURBOPACK compile-time value", void 0)))
                 }, void 0, false, {
                     fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-                    lineNumber: 158,
+                    lineNumber: 228,
                     columnNumber: 21
                 }, ("TURBOPACK compile-time value", void 0))
             ]
         }, void 0, true, {
             fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-            lineNumber: 24,
+            lineNumber: 84,
             columnNumber: 13
         }, ("TURBOPACK compile-time value", void 0))
     }, void 0, false, {
         fileName: "[project]/src/components/Kitchen/Dashboard.tsx",
-        lineNumber: 23,
+        lineNumber: 83,
         columnNumber: 9
     }, ("TURBOPACK compile-time value", void 0));
 };
-_s(Dashboard, "WsN6vSaiA/HOCdnoOChVMNKn+MY=", false, function() {
+_s(Dashboard, "ZZ+qlMDStMRADMRL4gyzlGNOjgc=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$contexts$2f$OrderContext$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useOrder"]
     ];

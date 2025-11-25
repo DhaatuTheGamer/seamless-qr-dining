@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useOrder } from '../../contexts/OrderContext';
 
 import Button from '../Shared/Button';
@@ -6,9 +6,54 @@ import Button from '../Shared/Button';
 const Dashboard: React.FC = () => {
     const { orders, updateOrderStatus, serviceRequests: requests, resolveServiceRequest: completeRequest } = useOrder();
     const [activeTab, setActiveTab] = useState<'orders' | 'requests'>('orders');
+    const prevOrdersLength = useRef(orders.length);
 
     // Sort orders by timestamp
     const activeOrders = orders.filter(o => o.status !== 'completed' && o.status !== 'delivered');
+
+    // Sound Alert Logic
+    const playNotificationSound = () => {
+        try {
+            const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+            if (!AudioContext) return;
+
+            const ctx = new AudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(500, ctx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(1000, ctx.currentTime + 0.1);
+
+            gain.gain.setValueAtTime(0.1, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+
+            osc.start();
+            osc.stop(ctx.currentTime + 0.5);
+        } catch (e) {
+            console.error("Audio play failed", e);
+        }
+    };
+
+    useEffect(() => {
+        if (orders.length > prevOrdersLength.current) {
+            playNotificationSound();
+        }
+        prevOrdersLength.current = orders.length;
+    }, [orders.length]);
+
+    const getOrderAgeStatus = (timestamp: number) => {
+        const now = new Date().getTime();
+        const orderTime = new Date(timestamp).getTime();
+        const diffInMinutes = (now - orderTime) / 1000 / 60;
+
+        if (diffInMinutes > 15) return 'critical';
+        if (diffInMinutes > 5) return 'warning';
+        return 'normal';
+    };
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -18,6 +63,21 @@ const Dashboard: React.FC = () => {
             default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
         }
     };
+
+    const getAgeBorderColor = (ageStatus: string) => {
+        switch (ageStatus) {
+            case 'critical': return 'border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)] animate-pulse';
+            case 'warning': return 'border-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.2)]';
+            default: return 'border-transparent'; // Default border handled by glass-panel
+        }
+    };
+
+    // Force re-render every minute to update aging
+    const [, setTick] = useState(0);
+    useEffect(() => {
+        const timer = setInterval(() => setTick(t => t + 1), 60000);
+        return () => clearInterval(timer);
+    }, []);
 
     return (
         <div className="min-h-screen bg-[var(--secondary)] text-white p-6">
@@ -81,77 +141,87 @@ const Dashboard: React.FC = () => {
                                 <p className="text-sm text-gray-600 mt-2">Waiting for new orders to arrive...</p>
                             </div>
                         ) : (
-                            activeOrders.map(order => (
-                                <div key={order.id} className="glass-panel-dark rounded-xl p-0 flex flex-col h-full hover:border-[var(--primary)]/30 transition-colors duration-300 overflow-hidden group">
-                                    {/* Order Header */}
-                                    <div className="p-5 border-b border-white/5 bg-white/[0.02]">
-                                        <div className="flex justify-between items-start mb-3">
-                                            <div>
-                                                <h3 className="font-bold text-xl text-white">Table #{order.tableId}</h3>
-                                                <span className="text-xs text-gray-500 font-mono">#{order.id.slice(-4)}</span>
-                                            </div>
-                                            <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${getStatusColor(order.status)}`}>
-                                                {order.status}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center gap-2 text-xs text-gray-400">
-                                            <span>🕒</span>
-                                            {new Date(order.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                        </div>
-                                    </div>
-
-                                    {/* Items */}
-                                    <div className="flex-1 p-5 space-y-4 overflow-y-auto max-h-[300px] custom-scrollbar">
-                                        {order.items.map(item => (
-                                            <div key={item.cartId} className="flex gap-4">
-                                                <span className="font-bold text-[var(--primary)] bg-[var(--primary)]/10 w-8 h-8 flex items-center justify-center rounded-lg text-sm shrink-0 border border-[var(--primary)]/20">
-                                                    {item.quantity}
-                                                </span>
-                                                <div className="flex-1">
-                                                    <span className="text-gray-200 font-medium block">{item.name}</span>
-                                                    {item.notes && (
-                                                        <p className="text-xs text-[var(--accent)] mt-2 italic bg-[var(--accent)]/10 p-2 rounded border border-[var(--accent)]/20">
-                                                            "{item.notes}"
-                                                        </p>
-                                                    )}
+                            activeOrders.map(order => {
+                                const ageStatus = getOrderAgeStatus(order.timestamp);
+                                return (
+                                    <div key={order.id} className={`glass-panel-dark rounded-xl p-0 flex flex-col h-full hover:border-[var(--primary)]/30 transition-colors duration-300 overflow-hidden group border-2 ${getAgeBorderColor(ageStatus)}`}>
+                                        {/* Order Header */}
+                                        <div className="p-5 border-b border-white/5 bg-white/[0.02]">
+                                            <div className="flex justify-between items-start mb-3">
+                                                <div>
+                                                    <h3 className="font-bold text-xl text-white">Table #{order.tableId}</h3>
+                                                    <span className="text-xs text-gray-500 font-mono">#{order.id.slice(-4)}</span>
                                                 </div>
+                                                <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${getStatusColor(order.status)}`}>
+                                                    {order.status}
+                                                </span>
                                             </div>
-                                        ))}
-                                    </div>
+                                            <div className="flex items-center justify-between text-xs text-gray-400">
+                                                <div className="flex items-center gap-2">
+                                                    <span>🕒</span>
+                                                    {new Date(order.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                </div>
+                                                {ageStatus !== 'normal' && (
+                                                    <span className={`font-bold ${ageStatus === 'critical' ? 'text-red-400' : 'text-yellow-400'}`}>
+                                                        {Math.floor((new Date().getTime() - new Date(order.timestamp).getTime()) / 60000)}m ago
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
 
-                                    {/* Actions */}
-                                    <div className="p-4 border-t border-white/5 bg-white/[0.02] grid grid-cols-1 gap-3">
-                                        {order.status === 'pending' && (
-                                            <Button
-                                                size="md"
-                                                onClick={() => updateOrderStatus(order.id, 'preparing')}
-                                                className="bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-white border-0 w-full justify-center"
-                                            >
-                                                Start Preparing
-                                            </Button>
-                                        )}
-                                        {order.status === 'preparing' && (
-                                            <Button
-                                                size="md"
-                                                onClick={() => updateOrderStatus(order.id, 'ready')}
-                                                className="bg-green-600 hover:bg-green-700 text-white border-0 w-full justify-center"
-                                            >
-                                                Mark Ready
-                                            </Button>
-                                        )}
-                                        {order.status === 'ready' && (
-                                            <Button
-                                                size="md"
-                                                onClick={() => updateOrderStatus(order.id, 'delivered')}
-                                                variant="outline"
-                                                className="border-white/20 text-white hover:bg-white/10 w-full justify-center"
-                                            >
-                                                Complete Order
-                                            </Button>
-                                        )}
+                                        {/* Items */}
+                                        <div className="flex-1 p-5 space-y-4 overflow-y-auto max-h-[300px] custom-scrollbar">
+                                            {order.items.map(item => (
+                                                <div key={item.cartId} className="flex gap-4">
+                                                    <span className="font-bold text-[var(--primary)] bg-[var(--primary)]/10 w-8 h-8 flex items-center justify-center rounded-lg text-sm shrink-0 border border-[var(--primary)]/20">
+                                                        {item.quantity}
+                                                    </span>
+                                                    <div className="flex-1">
+                                                        <span className="text-gray-200 font-medium block">{item.name}</span>
+                                                        {item.notes && (
+                                                            <p className="text-xs text-[var(--accent)] mt-2 italic bg-[var(--accent)]/10 p-2 rounded border border-[var(--accent)]/20">
+                                                                "{item.notes}"
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* Actions */}
+                                        <div className="p-4 border-t border-white/5 bg-white/[0.02] grid grid-cols-1 gap-3">
+                                            {order.status === 'pending' && (
+                                                <Button
+                                                    size="md"
+                                                    onClick={() => updateOrderStatus(order.id, 'preparing')}
+                                                    className="bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-white border-0 w-full justify-center"
+                                                >
+                                                    Start Preparing
+                                                </Button>
+                                            )}
+                                            {order.status === 'preparing' && (
+                                                <Button
+                                                    size="md"
+                                                    onClick={() => updateOrderStatus(order.id, 'ready')}
+                                                    className="bg-green-600 hover:bg-green-700 text-white border-0 w-full justify-center"
+                                                >
+                                                    Mark Ready
+                                                </Button>
+                                            )}
+                                            {order.status === 'ready' && (
+                                                <Button
+                                                    size="md"
+                                                    onClick={() => updateOrderStatus(order.id, 'delivered')}
+                                                    variant="outline"
+                                                    className="border-white/20 text-white hover:bg-white/10 w-full justify-center"
+                                                >
+                                                    Complete Order
+                                                </Button>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            ))
+                                );
+                            })
                         )}
                     </div>
                 ) : (

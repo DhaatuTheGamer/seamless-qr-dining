@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { menuItems, CATEGORIES, type MenuItem as MenuItemType } from '../../data/menu';
 import { useOrder } from '../../contexts/OrderContext';
 import MenuItem from './MenuItem';
@@ -6,6 +6,9 @@ import VirtualWaiter from './VirtualWaiter';
 import ItemDetail from './ItemDetail';
 import Cart from './Cart';
 import OrderHistory from './OrderHistory';
+import MenuSkeleton from './MenuSkeleton';
+import CartFloatingBar from './CartFloatingBar';
+import { motion } from 'framer-motion';
 
 interface MenuProps {
   tableId: string;
@@ -16,6 +19,14 @@ const Menu: React.FC<MenuProps> = ({ tableId }) => {
   const [activeCategory, setActiveCategory] = useState('starters');
   const [selectedItem, setSelectedItem] = useState<MenuItemType | null>(null);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Simulate loading
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => setIsLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, [activeCategory]);
 
   const filteredItems = menuItems.filter(item => item.category === activeCategory);
 
@@ -67,19 +78,31 @@ const Menu: React.FC<MenuProps> = ({ tableId }) => {
         </div>
 
         {/* Menu Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-slide-up" style={{ animationDelay: '0.1s' }}>
-          {filteredItems.map(item => (
-            <MenuItem
-              key={item.id}
-              item={item}
-              onAdd={() => setSelectedItem(item)}
-            />
-          ))}
-        </div>
+        {isLoading ? (
+          <MenuSkeleton />
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {filteredItems.map(item => (
+              <MenuItem
+                key={item.id}
+                item={item}
+                onAdd={() => setSelectedItem(item)}
+              />
+            ))}
+          </motion.div>
+        )}
       </div>
 
       {/* Virtual Waiter */}
       <VirtualWaiter tableId={tableId} />
+
+      {/* Floating Cart Bar */}
+      <CartFloatingBar onOpenCart={() => setIsCartOpen(true)} />
 
       {/* Item Detail Modal */}
       {selectedItem && (

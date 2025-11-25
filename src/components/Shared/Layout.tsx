@@ -1,4 +1,5 @@
 import { useOrder } from '../../contexts/OrderContext';
+import { Toaster } from 'react-hot-toast';
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -9,6 +10,18 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-50">
+            <Toaster position="bottom-center" toastOptions={{
+                style: {
+                    background: '#333',
+                    color: '#fff',
+                },
+                success: {
+                    iconTheme: {
+                        primary: '#10B981',
+                        secondary: 'white',
+                    },
+                },
+            }} />
             {/* Header */}
             <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
                 <div className="container mx-auto px-4 h-16 flex items-center justify-between">
