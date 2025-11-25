@@ -1,73 +1,50 @@
-# React + TypeScript + Vite
+# Seamless QR Dining
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Welcome to the **Seamless QR Dining** project! This is a web application designed to make ordering food at restaurants easier and faster.
 
-Currently, two official plugins are available:
+## What is this?
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This app allows customers to order food directly from their table by scanning a QR code. It also provides a screen for the kitchen staff to see orders as they come in.
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 🍽️ For Customers
+- **Digital Menu**: Browse food items with beautiful pictures and descriptions.
+- **Easy Ordering**: Add items to your cart and place an order instantly.
+- **Categories**: Quickly find Starters, Mains, Desserts, and Drinks.
+- **Virtual Waiter**: Request water, the bill, or a waiter with a single click.
+- **Dietary Info**: See if items are Vegan, Gluten-Free, or Spicy.
 
-## Expanding the ESLint configuration
+### 👨‍🍳 For Kitchen Staff
+- **Kitchen Dashboard**: View all incoming orders in one place.
+- **Table Tracking**: Know exactly which table placed the order.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Tech Stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+We used modern and popular tools to build this app:
+- **React**: A library for building user interfaces.
+- **TypeScript**: A tool that helps catch errors in our code.
+- **Vite**: A tool that makes the app run very fast.
+- **Tailwind CSS**: A tool for styling the app and making it look good.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## How to Start
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Follow these simple steps to run the project on your computer:
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+1. **Install Tools**: Open your terminal (command prompt) and run this command to download the necessary tools:
+   ```bash
+   npm install
+   ```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+2. **Run the App**: Start the application by running:
+   ```bash
+   npm run dev
+   ```
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+3. **Open in Browser**: You will see a link in the terminal (usually `http://localhost:5173`). Click it to open the app!
+
+## Project Structure
+
+- `src/components/Customer`: Code for the customer's view (Menu, Cart, etc.).
+- `src/components/Kitchen`: Code for the kitchen's view (Dashboard).
+- `src/data`: Contains the list of menu items.
