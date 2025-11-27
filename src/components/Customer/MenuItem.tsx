@@ -17,55 +17,43 @@ const MenuItem: React.FC<MenuItemProps> = ({ item, onAdd }) => {
             className="h-full"
         >
             <Card
-                className="overflow-hidden p-0 h-full flex flex-col group border-0 bg-white hover:shadow-xl transition-all duration-500"
+                className="overflow-hidden p-0 h-full flex flex-col group border-0 shadow-md hover:shadow-xl transition-all duration-300 rounded-2xl bg-white"
                 onClick={onAdd}
             >
-                <div className="relative h-56 overflow-hidden">
+                <div className="relative h-64 overflow-hidden">
                     <img
                         src={item.image}
                         alt={item.name}
                         className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                         loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 transition-opacity duration-300 group-hover:opacity-70"></div>
-
-                    <div className="absolute top-3 right-3 flex flex-wrap gap-1 justify-end">
-                        {item.dietary?.map(tag => (
-                            <span key={tag} className="px-2.5 py-1 bg-white/20 backdrop-blur-md border border-white/30 text-white text-[10px] font-bold tracking-wider rounded-full uppercase shadow-sm">
-                                {tag}
-                            </span>
-                        ))}
-                    </div>
-
-                    <div className="absolute bottom-0 left-0 w-full p-4 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                        <div className="flex justify-between items-end mb-1">
-                            <span className="font-heading font-bold text-white text-2xl drop-shadow-md">${item.price}</span>
-                        </div>
-                    </div>
                 </div>
 
-                <div className="p-5 flex flex-col flex-grow relative">
-                    <div className="mb-2">
-                        <h3 className="font-heading font-bold text-[var(--secondary)] text-xl leading-tight mb-2 group-hover:text-[var(--primary)] transition-colors">
+                <div className="p-6 flex flex-col flex-grow">
+                    <div className="mb-3">
+                        <h3 className="font-bold text-[#3d312e] text-xl leading-tight mb-2">
                             {item.name}
                         </h3>
+                        <p className="text-[#8b7e78] text-sm line-clamp-2 leading-relaxed">
+                            {item.description}
+                        </p>
                     </div>
-                    <p className="text-[var(--text-muted)] text-sm line-clamp-2 mb-6 flex-grow leading-relaxed">
-                        {item.description}
-                    </p>
 
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        fullWidth
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            onAdd();
-                        }}
-                        className="mt-auto border-[var(--primary)] text-[var(--primary-dark)] hover:bg-[var(--primary-gradient)] hover:text-white hover:border-transparent transition-all duration-300 font-medium tracking-wide"
-                    >
-                        Add to Order
-                    </Button>
+                    <div className="mt-auto pt-4 flex flex-col gap-4">
+                        <span className="font-bold text-[#3d312e] text-xl">${item.price.toFixed(2)}</span>
+
+                        <Button
+                            fullWidth
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onAdd();
+                            }}
+                            className="bg-[#a0522d]/90 hover:bg-[#8b4513] text-white border-0 py-3 rounded-xl font-bold shadow-lg shadow-[#a0522d]/20 flex items-center justify-center gap-2"
+                        >
+                            <span>Add to Cart</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        </Button>
+                    </div>
                 </div>
             </Card>
         </motion.div>

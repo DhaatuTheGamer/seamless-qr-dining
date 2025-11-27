@@ -1,15 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useOrder } from '../../contexts/OrderContext';
-
 import Button from '../Shared/Button';
 
 const Dashboard: React.FC = () => {
-    const { orders, updateOrderStatus, serviceRequests: requests, resolveServiceRequest: completeRequest } = useOrder();
-    const [activeTab, setActiveTab] = useState<'orders' | 'requests'>('orders');
+    const { orders, updateOrderStatus } = useOrder();
     const prevOrdersLength = useRef(orders.length);
-
-    // Sort orders by timestamp
-    const activeOrders = orders.filter(o => o.status !== 'completed' && o.status !== 'delivered');
 
     // Sound Alert Logic
     const playNotificationSound = () => {
@@ -45,237 +40,206 @@ const Dashboard: React.FC = () => {
         prevOrdersLength.current = orders.length;
     }, [orders.length]);
 
-    const getOrderAgeStatus = (timestamp: number) => {
-        const now = new Date().getTime();
-        const orderTime = new Date(timestamp).getTime();
-        const diffInMinutes = (now - orderTime) / 1000 / 60;
+    // Group orders by status
+    const newOrders = orders.filter(o => o.status === 'pending');
+    const activeOrders = orders.filter(o => o.status === 'preparing' || o.status === 'ready');
+    const completedOrders = orders.filter(o => o.status === 'delivered' || o.status === 'completed');
 
-        if (diffInMinutes > 15) return 'critical';
-        if (diffInMinutes > 5) return 'warning';
-        return 'normal';
+    const getTimeAgo = (timestamp: number) => {
+        const diff = Math.floor((new Date().getTime() - new Date(timestamp).getTime()) / 60000);
+        if (diff < 1) return 'Just now';
+        return `${diff}m ago`;
     };
-
-    const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'pending': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
-            case 'preparing': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-            case 'ready': return 'bg-green-500/20 text-green-400 border-green-500/30';
-            default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
-        }
-    };
-
-    const getAgeBorderColor = (ageStatus: string) => {
-        switch (ageStatus) {
-            case 'critical': return 'border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)] animate-pulse';
-            case 'warning': return 'border-yellow-500 shadow-[0_0_10px_rgba(234,179,8,0.2)]';
-            default: return 'border-transparent'; // Default border handled by glass-panel
-        }
-    };
-
-    // Force re-render every minute to update aging
-    const [, setTick] = useState(0);
-    useEffect(() => {
-        const timer = setInterval(() => setTick(t => t + 1), 60000);
-        return () => clearInterval(timer);
-    }, []);
 
     return (
-        <div className="min-h-screen bg-[var(--secondary)] text-white p-6">
-            <div className="container mx-auto max-w-[1600px]">
-                {/* Header */}
-                <header className="flex flex-col md:flex-row justify-between items-center mb-10 gap-6">
+        <div className="min-h-screen bg-[#1e293b] text-white p-4 font-sans">
+            {/* Header */}
+            <header className="flex justify-between items-center mb-6 bg-[#0f172a] p-4 rounded-xl border border-white/5 shadow-lg">
+                <div className="flex items-center gap-4">
+                    <div className="text-blue-500 text-2xl">🍴</div>
                     <div>
-                        <h1 className="text-4xl font-heading font-bold text-transparent bg-clip-text bg-gradient-to-r from-[var(--primary)] to-[var(--primary-light)] mb-2">
-                            Kitchen Display System
-                        </h1>
-                        <p className="text-gray-400 text-sm font-medium tracking-wide">LIVE ORDER MANAGEMENT</p>
+                        <h1 className="text-xl font-bold text-white">Seamless Dining</h1>
+                        <p className="text-xs text-gray-400">Kitchen Dashboard</p>
                     </div>
-                    <div className="flex gap-4">
-                        <div className="glass-panel-dark px-6 py-3 rounded-xl flex flex-col items-center min-w-[120px]">
-                            <span className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Active Orders</span>
-                            <span className="text-3xl font-bold text-white">{activeOrders.length}</span>
-                        </div>
-                        <div className="glass-panel-dark px-6 py-3 rounded-xl flex flex-col items-center min-w-[120px]">
-                            <span className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Requests</span>
-                            <span className={`text-3xl font-bold ${requests.filter(r => r.status === 'pending').length > 0 ? 'text-[var(--accent)]' : 'text-white'}`}>
-                                {requests.filter(r => r.status === 'pending').length}
-                            </span>
-                        </div>
+                </div>
+                <div className="flex gap-3">
+                    <div className="px-4 py-2 bg-[#1e293b] rounded-lg border border-white/10 text-sm font-medium text-gray-300">
+                        Main Kitchen
                     </div>
-                </header>
+                    <div className="px-4 py-2 bg-[#1e293b] rounded-lg border border-white/10 text-sm font-medium text-gray-300">
+                        Staff: Alex
+                    </div>
+                </div>
+            </header>
 
-                {/* Tabs */}
-                <div className="flex gap-8 mb-10 border-b border-white/5">
-                    <button
-                        onClick={() => setActiveTab('orders')}
-                        className={`pb-4 px-2 font-bold text-sm uppercase tracking-widest transition-all border-b-2 ${activeTab === 'orders'
-                            ? 'border-[var(--primary)] text-[var(--primary)]'
-                            : 'border-transparent text-gray-500 hover:text-gray-300'
-                            }`}
-                    >
-                        Orders Queue
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('requests')}
-                        className={`pb-4 px-2 font-bold text-sm uppercase tracking-widest transition-all border-b-2 ${activeTab === 'requests'
-                            ? 'border-[var(--primary)] text-[var(--primary)]'
-                            : 'border-transparent text-gray-500 hover:text-gray-300'
-                            }`}
-                    >
-                        Service Requests
-                        {requests.filter(r => r.status === 'pending').length > 0 && (
-                            <span className="ml-3 bg-[var(--accent)] text-white text-[10px] px-2 py-0.5 rounded-full animate-pulse">
-                                {requests.filter(r => r.status === 'pending').length}
-                            </span>
-                        )}
-                    </button>
+            {/* Columns */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-140px)]">
+
+                {/* New Orders Column */}
+                <div className="flex flex-col bg-[#0f172a] rounded-xl border border-white/5 overflow-hidden">
+                    <div className="p-4 bg-[#2563eb] text-white font-bold flex justify-between items-center">
+                        <span>New Orders</span>
+                        <span className="bg-white/20 px-2 py-0.5 rounded text-sm">{newOrders.length}</span>
+                    </div>
+                    <div className="flex-1 p-4 overflow-y-auto custom-scrollbar space-y-4">
+                        {newOrders.map(order => (
+                            <div key={order.id} className="bg-[#1e293b] rounded-lg p-4 border border-white/5 hover:border-[#2563eb]/50 transition-colors shadow-lg">
+                                <div className="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h3 className="font-bold text-lg text-white">Order #{order.id.slice(-4)}</h3>
+                                        <p className="text-xs text-red-400 font-bold">{getTimeAgo(order.timestamp)}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="font-bold text-white">Table {order.tableId}</div>
+                                        <div className="text-xs text-gray-400">{order.items.length} Items</div>
+                                    </div>
+                                </div>
+                                <div className="space-y-2 mb-4">
+                                    {order.items.map((item, idx) => (
+                                        <div key={idx} className="text-sm text-gray-300 flex justify-between">
+                                            <span>{item.quantity}x {item.name}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <Button
+                                        onClick={() => updateOrderStatus(order.id, 'preparing')}
+                                        className="bg-[#2563eb] hover:bg-[#1d4ed8] text-white text-sm py-2"
+                                    >
+                                        Accept
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        className="border-white/10 text-gray-300 hover:bg-white/5 text-sm py-2"
+                                    >
+                                        View Details
+                                    </Button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
 
-                {/* Content */}
-                {activeTab === 'orders' ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in">
-                        {activeOrders.length === 0 ? (
-                            <div className="col-span-full flex flex-col items-center justify-center h-96 text-gray-600 border-2 border-dashed border-white/5 rounded-3xl bg-white/[0.02]">
-                                <span className="text-6xl mb-6 opacity-50">👨‍🍳</span>
-                                <p className="text-xl font-medium text-gray-400">No active orders</p>
-                                <p className="text-sm text-gray-600 mt-2">Waiting for new orders to arrive...</p>
-                            </div>
-                        ) : (
-                            activeOrders.map(order => {
-                                const ageStatus = getOrderAgeStatus(order.timestamp);
-                                return (
-                                    <div key={order.id} className={`glass-panel-dark rounded-xl p-0 flex flex-col h-full hover:border-[var(--primary)]/30 transition-colors duration-300 overflow-hidden group border-2 ${getAgeBorderColor(ageStatus)}`}>
-                                        {/* Order Header */}
-                                        <div className="p-5 border-b border-white/5 bg-white/[0.02]">
-                                            <div className="flex justify-between items-start mb-3">
-                                                <div>
-                                                    <h3 className="font-bold text-xl text-white">Table #{order.tableId}</h3>
-                                                    <span className="text-xs text-gray-500 font-mono">#{order.id.slice(-4)}</span>
-                                                </div>
-                                                <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${getStatusColor(order.status)}`}>
-                                                    {order.status}
-                                                </span>
-                                            </div>
-                                            <div className="flex items-center justify-between text-xs text-gray-400">
-                                                <div className="flex items-center gap-2">
-                                                    <span>🕒</span>
-                                                    {new Date(order.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                                </div>
-                                                {ageStatus !== 'normal' && (
-                                                    <span className={`font-bold ${ageStatus === 'critical' ? 'text-red-400' : 'text-yellow-400'}`}>
-                                                        {Math.floor((new Date().getTime() - new Date(order.timestamp).getTime()) / 60000)}m ago
-                                                    </span>
-                                                )}
-                                            </div>
-                                        </div>
-
-                                        {/* Items */}
-                                        <div className="flex-1 p-5 space-y-4 overflow-y-auto max-h-[300px] custom-scrollbar">
-                                            {order.items.map(item => (
-                                                <div key={item.cartId} className="flex gap-4">
-                                                    <span className="font-bold text-[var(--primary)] bg-[var(--primary)]/10 w-8 h-8 flex items-center justify-center rounded-lg text-sm shrink-0 border border-[var(--primary)]/20">
-                                                        {item.quantity}
-                                                    </span>
-                                                    <div className="flex-1">
-                                                        <span className="text-gray-200 font-medium block">{item.name}</span>
-                                                        {item.notes && (
-                                                            <p className="text-xs text-[var(--accent)] mt-2 italic bg-[var(--accent)]/10 p-2 rounded border border-[var(--accent)]/20">
-                                                                "{item.notes}"
-                                                            </p>
-                                                        )}
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-
-                                        {/* Actions */}
-                                        <div className="p-4 border-t border-white/5 bg-white/[0.02] grid grid-cols-1 gap-3">
-                                            {order.status === 'pending' && (
-                                                <Button
-                                                    size="md"
-                                                    onClick={() => updateOrderStatus(order.id, 'preparing')}
-                                                    className="bg-[var(--primary)] hover:bg-[var(--primary-dark)] text-white border-0 w-full justify-center"
-                                                >
-                                                    Start Preparing
-                                                </Button>
-                                            )}
-                                            {order.status === 'preparing' && (
-                                                <Button
-                                                    size="md"
-                                                    onClick={() => updateOrderStatus(order.id, 'ready')}
-                                                    className="bg-green-600 hover:bg-green-700 text-white border-0 w-full justify-center"
-                                                >
-                                                    Mark Ready
-                                                </Button>
-                                            )}
-                                            {order.status === 'ready' && (
-                                                <Button
-                                                    size="md"
-                                                    onClick={() => updateOrderStatus(order.id, 'delivered')}
-                                                    variant="outline"
-                                                    className="border-white/20 text-white hover:bg-white/10 w-full justify-center"
-                                                >
-                                                    Complete Order
-                                                </Button>
-                                            )}
-                                        </div>
-                                    </div>
-                                );
-                            })
-                        )}
+                {/* Active Orders Column */}
+                <div className="flex flex-col bg-[#0f172a] rounded-xl border border-white/5 overflow-hidden">
+                    <div className="p-4 bg-[#f59e0b] text-white font-bold flex justify-between items-center">
+                        <span>Active Orders</span>
+                        <span className="bg-white/20 px-2 py-0.5 rounded text-sm">{activeOrders.length}</span>
                     </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-fade-in">
-                        {requests.length === 0 ? (
-                            <div className="col-span-full flex flex-col items-center justify-center h-96 text-gray-600 border-2 border-dashed border-white/5 rounded-3xl bg-white/[0.02]">
-                                <span className="text-6xl mb-6 opacity-50">🔔</span>
-                                <p className="text-xl font-medium text-gray-400">No pending requests</p>
-                            </div>
-                        ) : (
-                            requests.map(req => (
-                                <div key={req.id} className={`glass-panel-dark rounded-xl p-6 text-white relative overflow-hidden ${req.status === 'pending' ? 'border-l-4 border-l-[var(--accent)]' : 'opacity-50'}`}>
-                                    <div className="flex justify-between items-start mb-6">
-                                        <h3 className="font-bold text-xl">Table #{req.tableId}</h3>
-                                        <span className="text-xs text-gray-400 font-mono">
-                                            {new Date(req.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                        </span>
-                                    </div>
-
-                                    <div className="mb-8">
-                                        <div className="flex items-center gap-4 mb-3">
-                                            <span className="text-3xl bg-white/5 p-2 rounded-lg">
-                                                {req.type === 'water' ? '💧' : req.type === 'bill' ? '🧾' : req.type === 'help' ? '👋' : '💬'}
+                    <div className="flex-1 p-4 overflow-y-auto custom-scrollbar space-y-4">
+                        {activeOrders.map(order => (
+                            <div key={order.id} className="bg-[#1e293b] rounded-lg p-4 border border-white/5 hover:border-[#f59e0b]/50 transition-colors shadow-lg relative overflow-hidden">
+                                {order.status === 'ready' && <div className="absolute top-0 right-0 bg-green-500 text-white text-[10px] px-2 py-1 font-bold">PLATED</div>}
+                                <div className="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h3 className="font-bold text-lg text-white">Order #{order.id.slice(-4)}</h3>
+                                        <div className="flex items-center gap-2">
+                                            <span className={`text-xs font-bold ${order.status === 'preparing' ? 'text-[#f59e0b]' : 'text-green-400'}`}>
+                                                {order.status === 'preparing' ? 'Cooking' : 'Plating'}
                                             </span>
-                                            <span className="font-bold text-lg uppercase tracking-wider text-gray-200">
-                                                {req.type}
-                                            </span>
+                                            <span className="text-xs text-gray-500">({getTimeAgo(order.timestamp)})</span>
                                         </div>
-                                        {req.message && (
-                                            <p className="text-sm text-gray-300 bg-white/5 p-4 rounded-lg italic border border-white/5">
-                                                "{req.message}"
-                                            </p>
-                                        )}
                                     </div>
+                                    <div className="text-right">
+                                        <div className="font-bold text-white">Table {order.tableId}</div>
+                                        <div className="text-xs text-gray-400">{order.items.length} Items</div>
+                                    </div>
+                                </div>
+                                <div className="space-y-2 mb-4">
+                                    {order.items.map((item, idx) => (
+                                        <div key={idx} className="text-sm text-gray-300 flex justify-between">
+                                            <span>{item.quantity}x {item.name}</span>
+                                        </div>
+                                    ))}
+                                </div>
 
-                                    {req.status === 'pending' ? (
+                                {order.status === 'preparing' && (
+                                    <div className="w-full bg-gray-700 h-1.5 rounded-full mb-4 overflow-hidden">
+                                        <div className="bg-[#f59e0b] h-full w-[60%]"></div>
+                                    </div>
+                                )}
+                                {order.status === 'ready' && (
+                                    <div className="w-full bg-gray-700 h-1.5 rounded-full mb-4 overflow-hidden">
+                                        <div className="bg-green-500 h-full w-[90%]"></div>
+                                    </div>
+                                )}
+
+                                <div className="grid grid-cols-2 gap-2">
+                                    {order.status === 'preparing' ? (
                                         <Button
-                                            size="sm"
-                                            fullWidth
-                                            onClick={() => completeRequest(req.id)}
-                                            className="bg-[var(--accent)] hover:bg-red-700 border-0 text-white shadow-lg shadow-red-900/20"
+                                            onClick={() => updateOrderStatus(order.id, 'ready')}
+                                            className="bg-[#f59e0b] hover:bg-[#d97706] text-white text-sm py-2"
                                         >
-                                            Mark Completed
+                                            Mark Plated
                                         </Button>
                                     ) : (
-                                        <div className="text-center text-xs text-green-400 font-bold uppercase tracking-widest border border-green-500/30 bg-green-500/10 py-2 rounded-lg">
-                                            Completed
-                                        </div>
+                                        <Button
+                                            onClick={() => updateOrderStatus(order.id, 'delivered')}
+                                            className="bg-green-600 hover:bg-green-700 text-white text-sm py-2"
+                                        >
+                                            Complete
+                                        </Button>
                                     )}
+                                    <Button
+                                        variant="outline"
+                                        className="border-white/10 text-gray-300 hover:bg-white/5 text-sm py-2"
+                                    >
+                                        View Details
+                                    </Button>
                                 </div>
-                            ))
-                        )}
+                            </div>
+                        ))}
                     </div>
-                )}
+                </div>
+
+                {/* Completed Orders Column */}
+                <div className="flex flex-col bg-[#0f172a] rounded-xl border border-white/5 overflow-hidden">
+                    <div className="p-4 bg-[#10b981] text-white font-bold flex justify-between items-center">
+                        <span>Completed Orders</span>
+                        <span className="bg-white/20 px-2 py-0.5 rounded text-sm">{completedOrders.length}</span>
+                    </div>
+                    <div className="flex-1 p-4 overflow-y-auto custom-scrollbar space-y-4">
+                        {completedOrders.map(order => (
+                            <div key={order.id} className="bg-[#1e293b] rounded-lg p-4 border border-white/5 opacity-75 hover:opacity-100 transition-opacity shadow-lg">
+                                <div className="flex justify-between items-start mb-3">
+                                    <div>
+                                        <h3 className="font-bold text-lg text-white">Order #{order.id.slice(-4)}</h3>
+                                        <p className="text-xs text-gray-500">Completed {getTimeAgo(order.timestamp)}</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <div className="font-bold text-white">Table {order.tableId}</div>
+                                        <div className="text-xs text-green-400 flex items-center justify-end gap-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                            Done
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="space-y-1 mb-3">
+                                    {order.items.map((item, idx) => (
+                                        <div key={idx} className="text-sm text-gray-400 truncate">
+                                            {item.quantity}x {item.name}
+                                        </div>
+                                    ))}
+                                </div>
+                                <div className="grid grid-cols-2 gap-2">
+                                    <Button
+                                        variant="outline"
+                                        className="border-white/10 text-gray-400 hover:bg-white/5 text-xs py-1.5"
+                                    >
+                                        View Details
+                                    </Button>
+                                    <Button
+                                        variant="outline"
+                                        className="border-white/10 text-gray-400 hover:bg-white/5 text-xs py-1.5"
+                                    >
+                                        Print Receipt
+                                    </Button>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
             </div>
         </div>
     );

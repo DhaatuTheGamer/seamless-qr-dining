@@ -39,20 +39,31 @@ const Menu: React.FC<MenuProps> = ({ tableId }) => {
   }
 
   return (
-    <div className="min-h-screen pb-24 bg-gray-50">
-      {/* Categories Sticky Header */}
-      <div className="sticky top-16 z-20 bg-white/90 backdrop-blur-md border-b border-gray-100 pt-4 pb-2 mb-6">
+    <div className="min-h-screen pb-24 bg-white">
+      {/* Hero Section */}
+      <div className="relative h-64 -mt-6 mb-8 overflow-hidden rounded-b-3xl shadow-lg">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=1974&auto=format&fit=crop')] bg-cover bg-center"></div>
+        <div className="absolute inset-0 bg-black/40"></div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <h1 className="text-5xl font-bold text-white font-heading tracking-tight drop-shadow-lg text-center px-4">
+            Our Seasonal Menu
+          </h1>
+        </div>
+      </div>
+
+      {/* Categories */}
+      <div className="sticky top-16 z-20 bg-white/95 backdrop-blur-md border-b border-gray-100 mb-8">
         <div className="container mx-auto px-4 overflow-x-auto no-scrollbar">
-          <div className="flex gap-3 pb-2">
+          <div className="flex justify-center gap-8 min-w-max px-4">
             {CATEGORIES.map(cat => (
               <button
                 key={cat.id}
                 onClick={() => setActiveCategory(cat.id)}
                 className={`
-                  whitespace-nowrap px-5 py-2 rounded-full text-sm font-medium transition-all duration-200
+                  py-4 text-base font-medium transition-all duration-200 border-b-2 relative
                   ${activeCategory === cat.id
-                    ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/20'
-                    : 'bg-white text-gray-600 border border-gray-200 hover:border-emerald-500 hover:text-emerald-600'
+                    ? 'text-[#a0522d] border-[#a0522d]'
+                    : 'text-gray-500 border-transparent hover:text-gray-800'
                   }
                 `}
               >
@@ -63,20 +74,7 @@ const Menu: React.FC<MenuProps> = ({ tableId }) => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4">
-        {/* Section Header */}
-        <div className="animate-slide-up mb-8">
-          <div className="flex items-end justify-between mb-2">
-            <h2 className="text-3xl font-bold text-gray-900 capitalize tracking-tight">
-              {CATEGORIES.find(c => c.id === activeCategory)?.label}
-            </h2>
-            <span className="text-sm text-gray-500 font-medium bg-white px-3 py-1 rounded-full border border-gray-100 shadow-sm">
-              {filteredItems.length} items
-            </span>
-          </div>
-          <div className="h-1 w-16 bg-emerald-500 rounded-full"></div>
-        </div>
-
+      <div className="container mx-auto px-4 max-w-7xl">
         {/* Menu Grid */}
         {isLoading ? (
           <MenuSkeleton />
@@ -85,7 +83,7 @@ const Menu: React.FC<MenuProps> = ({ tableId }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
           >
             {filteredItems.map(item => (
               <MenuItem

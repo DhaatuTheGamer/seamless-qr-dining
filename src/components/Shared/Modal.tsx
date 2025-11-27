@@ -6,9 +6,11 @@ interface ModalProps {
     onClose: () => void;
     children: React.ReactNode;
     title?: string;
+    className?: string;
+    panelClassName?: string;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title, className, panelClassName }) => {
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
@@ -23,24 +25,32 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title }) => {
     if (!isOpen) return null;
 
     return createPortal(
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in">
+        <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 animate-fade-in ${className || ''}`}>
             <div
-                className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
+                className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
                 onClick={onClose}
             />
-            <div className="relative w-full max-w-lg glass-panel rounded-2xl shadow-2xl overflow-hidden animate-slide-up">
+            <div className={`relative w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden animate-slide-up ${panelClassName || 'bg-white'}`}>
                 {title && (
-                    <div className="px-6 py-4 border-b border-gray-100/20 flex justify-between items-center bg-white/40">
-                        <h3 className="text-xl font-heading font-bold text-[var(--secondary)]">{title}</h3>
+                    <div className="px-6 py-4 border-b border-gray-100/10 flex justify-between items-center">
+                        <h3 className="text-xl font-heading font-bold">{title}</h3>
                         <button
                             onClick={onClose}
-                            className="p-2 -mr-2 text-[var(--text-muted)] hover:text-[var(--primary)] transition-colors rounded-full hover:bg-black/5"
+                            className="p-2 -mr-2 text-gray-400 hover:text-white transition-colors rounded-full hover:bg-white/10"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                         </button>
                     </div>
                 )}
-                <div className="p-6">
+                {!title && (
+                    <button
+                        onClick={onClose}
+                        className="absolute top-4 right-4 z-10 p-2 text-gray-400 hover:text-white transition-colors rounded-full hover:bg-white/10"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                )}
+                <div className="max-h-[85vh] overflow-y-auto custom-scrollbar">
                     {children}
                 </div>
             </div>
