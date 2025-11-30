@@ -4,10 +4,25 @@ import Button from '../Shared/Button';
 import Card from '../Shared/Card';
 import { useRouter } from 'next/navigation';
 
+/**
+ * Props for the Login component.
+ */
 interface LoginProps {
+    /** The initial table ID passed via query parameter or default. */
     tableId: string;
 }
 
+/**
+ * The login and welcome screen component.
+ * Handles table number entry, guest access, and phone number authentication with simulated OTP.
+ *
+ * @component
+ * @example
+ * <Login tableId="table-1" />
+ *
+ * @param {LoginProps} props - The component props.
+ * @returns {JSX.Element} The rendered login component.
+ */
 const Login: React.FC<LoginProps> = ({ tableId: initialTableId }) => {
     const { login, loginAsGuest } = useAuth();
     const router = useRouter();
@@ -19,6 +34,10 @@ const Login: React.FC<LoginProps> = ({ tableId: initialTableId }) => {
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
+    /**
+     * Navigates to the menu for the specified table.
+     * Logs the user in as a guest if not already authenticated.
+     */
     const handleViewMenu = () => {
         if (tableInput && tableInput !== initialTableId) {
             router.push(`/?table=${tableInput}`);
@@ -26,6 +45,10 @@ const Login: React.FC<LoginProps> = ({ tableId: initialTableId }) => {
         loginAsGuest();
     };
 
+    /**
+     * Handles sending the OTP code (simulated).
+     * @param e - Form submission event.
+     */
     const handleSendOtp = async (e: React.FormEvent) => {
         e.preventDefault();
         if (phone.length < 10) {
@@ -40,6 +63,11 @@ const Login: React.FC<LoginProps> = ({ tableId: initialTableId }) => {
         setStep('login_otp');
     };
 
+    /**
+     * Verifies the OTP code and logs the user in.
+     * Uses a hardcoded OTP '1234' for demonstration.
+     * @param e - Form submission event.
+     */
     const handleVerifyOtp = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);

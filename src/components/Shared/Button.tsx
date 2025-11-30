@@ -1,12 +1,32 @@
 import React from 'react';
 
+/**
+ * Props for the Button component.
+ * Extends standard HTML button attributes.
+ */
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    /** The visual style of the button. Defaults to 'primary'. */
     variant?: 'primary' | 'outline' | 'ghost';
+    /** The size of the button. Defaults to 'md'. */
     size?: 'sm' | 'md' | 'lg';
+    /** Whether the button should take up the full width of its container. */
     fullWidth?: boolean;
+    /** Whether the button is in a loading state. */
     isLoading?: boolean;
 }
 
+/**
+ * A reusable button component with various styles and sizes.
+ *
+ * @component
+ * @example
+ * <Button variant="primary" size="lg" onClick={() => console.log('Clicked')}>
+ *   Click Me
+ * </Button>
+ *
+ * @param {ButtonProps} props - The component props.
+ * @returns {JSX.Element} The rendered button component.
+ */
 const Button: React.FC<ButtonProps> = ({
     children,
     variant = 'primary',

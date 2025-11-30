@@ -2,16 +2,36 @@ import React from 'react';
 import { useOrder } from '../../contexts/OrderContext';
 import Drawer from '../Shared/Drawer';
 
+/**
+ * Props for the OrderHistory component.
+ */
 interface OrderHistoryProps {
+    /** Callback to close the history view. */
     onClose: () => void;
 }
 
+/**
+ * A side drawer component that displays the customer's order history.
+ * Lists orders sorted by timestamp with their status, items, and payment details.
+ *
+ * @component
+ * @example
+ * <OrderHistory onClose={closeHistory} />
+ *
+ * @param {OrderHistoryProps} props - The component props.
+ * @returns {JSX.Element} The rendered order history drawer.
+ */
 const OrderHistory: React.FC<OrderHistoryProps> = ({ onClose }) => {
     const { orders } = useOrder();
 
     // Sort orders by timestamp descending
     const sortedOrders = [...orders].sort((a, b) => b.timestamp - a.timestamp);
 
+    /**
+     * Gets the CSS color classes for a given order status.
+     * @param status - The order status.
+     * @returns {string} The CSS classes string.
+     */
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'pending': return 'bg-yellow-100 text-yellow-800 border-yellow-200';
@@ -23,6 +43,11 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ onClose }) => {
         }
     };
 
+    /**
+     * Gets the emoji icon for a given order status.
+     * @param status - The order status.
+     * @returns {string} The emoji icon.
+     */
     const getStatusIcon = (status: string) => {
         switch (status) {
             case 'pending': return '⏳';

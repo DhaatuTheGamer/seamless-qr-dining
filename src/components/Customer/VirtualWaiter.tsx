@@ -3,16 +3,35 @@ import { useOrder } from '../../contexts/OrderContext';
 import Modal from '../Shared/Modal';
 import Button from '../Shared/Button';
 
+/**
+ * Props for the VirtualWaiter component.
+ */
 interface VirtualWaiterProps {
+    /** The table ID from which the request is originating. */
     tableId: string;
 }
 
+/**
+ * A floating action button that opens a modal for requesting service.
+ * Allows customers to quickly request water, the bill, a waiter, or send a custom message.
+ *
+ * @component
+ * @example
+ * <VirtualWaiter tableId="table-1" />
+ *
+ * @param {VirtualWaiterProps} props - The component props.
+ * @returns {JSX.Element} The rendered virtual waiter component.
+ */
 const VirtualWaiter: React.FC<VirtualWaiterProps> = ({ tableId }) => {
     const { requestService } = useOrder();
     const [isOpen, setIsOpen] = useState(false);
     const [message, setMessage] = useState('');
     const [isSending, setIsSending] = useState(false);
 
+    /**
+     * Handles sending the service request.
+     * @param type - The type of request (water, bill, help, custom).
+     */
     const handleRequest = async (type: 'water' | 'bill' | 'help' | 'custom') => {
         if (type === 'custom' && !message.trim()) return;
 

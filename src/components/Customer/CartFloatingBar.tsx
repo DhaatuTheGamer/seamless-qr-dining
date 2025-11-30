@@ -2,10 +2,25 @@ import React from 'react';
 import { useOrder } from '../../contexts/OrderContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
+/**
+ * Props for the CartFloatingBar component.
+ */
 interface CartFloatingBarProps {
+    /** Callback to open the cart view. */
     onOpenCart: () => void;
 }
 
+/**
+ * A floating bar displayed at the bottom of the screen on mobile devices
+ * when there are items in the cart. Shows the total item count and price.
+ *
+ * @component
+ * @example
+ * <CartFloatingBar onOpenCart={openCart} />
+ *
+ * @param {CartFloatingBarProps} props - The component props.
+ * @returns {JSX.Element} The rendered floating bar component.
+ */
 const CartFloatingBar: React.FC<CartFloatingBarProps> = ({ onOpenCart }) => {
     const { cart } = useOrder();
     const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);

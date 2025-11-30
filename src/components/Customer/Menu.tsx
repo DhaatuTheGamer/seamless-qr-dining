@@ -10,10 +10,25 @@ import MenuSkeleton from './MenuSkeleton';
 import CartFloatingBar from './CartFloatingBar';
 import { motion } from 'framer-motion';
 
+/**
+ * Props for the Menu component.
+ */
 interface MenuProps {
+  /** The table ID for which the menu is being displayed. */
   tableId: string;
 }
 
+/**
+ * The main menu component displaying categories and menu items.
+ * Handles state for category selection, item details modal, cart visibility, and loading states.
+ *
+ * @component
+ * @example
+ * <Menu tableId="table-1" />
+ *
+ * @param {MenuProps} props - The component props.
+ * @returns {JSX.Element} The rendered menu component.
+ */
 const Menu: React.FC<MenuProps> = ({ tableId }) => {
   const { isCartOpen, setIsCartOpen } = useOrder();
   const [activeCategory, setActiveCategory] = useState('starters');

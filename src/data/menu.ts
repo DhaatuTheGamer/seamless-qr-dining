@@ -1,14 +1,31 @@
+/**
+ * Represents a single item on the menu.
+ * @interface
+ */
 export interface MenuItem {
+  /** The unique identifier for the menu item. */
   id: string;
+  /** The display name of the menu item. */
   name: string;
+  /** A detailed description of the menu item's ingredients and preparation. */
   description: string;
+  /** The price of the menu item in the base currency. */
   price: number;
+  /** The category the menu item belongs to. */
   category: 'starters' | 'mains' | 'desserts' | 'drinks';
+  /** The URL string for the menu item's image. */
   image: string;
+  /** An optional array of dietary flags (e.g., 'vegan', 'gf'). */
   dietary?: ('vegan' | 'gf' | 'alcoholic' | 'spicy')[];
+  /** Indicates whether the item is currently available for order. */
   available: boolean;
 }
 
+/**
+ * A predefined list of menu items available for order.
+ * This array acts as the data source for the application's menu.
+ * @type {MenuItem[]}
+ */
 export const menuItems: MenuItem[] = [
   // Starters
   {
@@ -106,6 +123,11 @@ export const menuItems: MenuItem[] = [
   }
 ];
 
+/**
+ * A list of category definitions for the menu.
+ * Used for organizing menu items in the UI.
+ * @type {Array<{id: string, label: string}>}
+ */
 export const CATEGORIES = [
   { id: 'starters', label: 'Starters' },
   { id: 'mains', label: 'Mains' },

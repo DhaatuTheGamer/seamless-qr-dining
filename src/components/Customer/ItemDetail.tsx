@@ -4,11 +4,27 @@ import { useOrder } from '../../contexts/OrderContext';
 import Modal from '../Shared/Modal';
 import Button from '../Shared/Button';
 
+/**
+ * Props for the ItemDetail component.
+ */
 interface ItemDetailProps {
+    /** The menu item to display details for. */
     item: MenuItem;
+    /** Callback to close the detail view. */
     onClose: () => void;
 }
 
+/**
+ * A modal component that displays detailed information about a menu item.
+ * Allows users to select options (cook level, sides, add-ons), quantity, and add notes before adding to cart.
+ *
+ * @component
+ * @example
+ * <ItemDetail item={selectedItem} onClose={closeDetail} />
+ *
+ * @param {ItemDetailProps} props - The component props.
+ * @returns {JSX.Element} The rendered item detail modal.
+ */
 const ItemDetail: React.FC<ItemDetailProps> = ({ item, onClose }) => {
     const { addToCart } = useOrder();
     const [quantity, setQuantity] = useState(1);
@@ -17,12 +33,20 @@ const ItemDetail: React.FC<ItemDetailProps> = ({ item, onClose }) => {
     const [side, setSide] = useState('French Fries');
     const [addons, setAddons] = useState<string[]>([]);
 
+    /**
+     * Handles adding the configured item to the cart.
+     * Combines options into a single notes string.
+     */
     const handleAddToCart = () => {
         const notesWithOptions = `Cook: ${cookLevel}, Side: ${side}, Addons: ${addons.join(', ')}. ${notes}`;
         addToCart(item, quantity, notesWithOptions);
         onClose();
     };
 
+    /**
+     * Toggles an addon selection.
+     * @param addon - The name of the addon to toggle.
+     */
     const toggleAddon = (addon: string) => {
         if (addons.includes(addon)) {
             setAddons(addons.filter(a => a !== addon));
