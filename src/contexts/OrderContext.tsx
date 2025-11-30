@@ -65,6 +65,7 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const [cart, setCart] = useState<CartItem[]>([]);
     const [orders, setOrders] = useState<Order[]>([]);
     const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
+    const [isInitialized, setIsInitialized] = useState(false);
 
     useEffect(() => {
         const savedOrders = localStorage.getItem('orders');
@@ -72,17 +73,23 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
         const savedRequests = localStorage.getItem('serviceRequests');
         if (savedRequests) setServiceRequests(JSON.parse(savedRequests));
+
+        setIsInitialized(true);
     }, []);
 
     // Persist orders
     useEffect(() => {
-        localStorage.setItem('orders', JSON.stringify(orders));
-    }, [orders]);
+        if (isInitialized) {
+            localStorage.setItem('orders', JSON.stringify(orders));
+        }
+    }, [orders, isInitialized]);
 
     // Persist service requests
     useEffect(() => {
-        localStorage.setItem('serviceRequests', JSON.stringify(serviceRequests));
-    }, [serviceRequests]);
+        if (isInitialized) {
+            localStorage.setItem('serviceRequests', JSON.stringify(serviceRequests));
+        }
+    }, [serviceRequests, isInitialized]);
 
     // Sync across tabs
     useEffect(() => {
