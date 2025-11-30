@@ -1,10 +1,28 @@
 import { useOrder } from '../../contexts/OrderContext';
 import { Toaster } from 'react-hot-toast';
 
+/**
+ * Props for the Layout component.
+ */
 interface LayoutProps {
+    /** The main content to render within the layout. */
     children: React.ReactNode;
 }
 
+/**
+ * The main layout component for the application.
+ * Includes the header, main content area, and mobile navigation bar.
+ * Also renders the toast notification container.
+ *
+ * @component
+ * @example
+ * <Layout>
+ *   <Component />
+ * </Layout>
+ *
+ * @param {LayoutProps} props - The component props.
+ * @returns {JSX.Element} The rendered layout component.
+ */
 const Layout: React.FC<LayoutProps> = ({ children }) => {
     const { setIsCartOpen, cart } = useOrder();
 

@@ -1,14 +1,36 @@
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
+/**
+ * Props for the Drawer component.
+ */
 interface DrawerProps {
+    /** Whether the drawer is currently open. */
     isOpen: boolean;
+    /** Callback function to close the drawer. */
     onClose: () => void;
+    /** The content to display inside the drawer. */
     children: React.ReactNode;
+    /** Optional title for the drawer header. */
     title?: string;
+    /** The side of the screen the drawer slides in from. Defaults to 'right'. */
     position?: 'left' | 'right';
 }
 
+/**
+ * A modal drawer component that slides in from the side of the screen.
+ * Uses a portal to render outside the current DOM hierarchy.
+ * Manages body scroll locking when open.
+ *
+ * @component
+ * @example
+ * <Drawer isOpen={isOpen} onClose={closeDrawer} title="My Drawer">
+ *   <p>Drawer Content</p>
+ * </Drawer>
+ *
+ * @param {DrawerProps} props - The component props.
+ * @returns {JSX.Element | null} The rendered drawer or null if closed.
+ */
 const Drawer: React.FC<DrawerProps> = ({ isOpen, onClose, children, title, position = 'right' }) => {
     useEffect(() => {
         if (isOpen) {
@@ -22,6 +44,9 @@ const Drawer: React.FC<DrawerProps> = ({ isOpen, onClose, children, title, posit
     }, [isOpen]);
 
     if (!isOpen) return null;
+
+    // Note: React Portal requires document.body to exist, which is true in useEffect/client-side.
+    // Ensure this component is only rendered on the client.
 
     const slideClass = position === 'right' ? 'translate-x-0' : 'translate-x-0';
     const initialClass = position === 'right' ? 'translate-x-full' : '-translate-x-full';

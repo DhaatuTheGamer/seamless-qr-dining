@@ -4,11 +4,27 @@ import { useAuth } from '../../contexts/AuthContext';
 import Button from '../Shared/Button';
 import Modal from '../Shared/Modal';
 
+/**
+ * Props for the Cart component.
+ */
 interface CartProps {
+    /** Callback to close the cart view. */
     onClose: () => void;
+    /** The table ID associated with the order. */
     tableId: string;
 }
 
+/**
+ * The full-screen shopping cart and checkout component.
+ * Allows users to review items, adjust quantities, add notes, select payment method, and place the order.
+ *
+ * @component
+ * @example
+ * <Cart onClose={closeCart} tableId="table-1" />
+ *
+ * @param {CartProps} props - The component props.
+ * @returns {JSX.Element} The rendered cart component.
+ */
 const Cart: React.FC<CartProps> = ({ onClose, tableId }) => {
     const { cart, updateCartQuantity, placeOrder, removeFromCart } = useOrder();
     const { user } = useAuth();
@@ -21,6 +37,10 @@ const Cart: React.FC<CartProps> = ({ onClose, tableId }) => {
     const tax = total * 0.1; // 10% tax
     const finalTotal = total + tax;
 
+    /**
+     * Handles the order placement process.
+     * Simulates an API call and then updates the order state.
+     */
     const handlePlaceOrder = async () => {
         setIsProcessing(true);
         // Simulate API call

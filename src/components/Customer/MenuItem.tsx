@@ -4,11 +4,28 @@ import Card from '../Shared/Card';
 import Button from '../Shared/Button';
 import { motion } from 'framer-motion';
 
+/**
+ * Props for the MenuItem component.
+ */
 interface MenuItemProps {
+    /** The menu item data to display. */
     item: MenuItemType;
+    /** Callback when the user clicks the "Add to Cart" button or the card itself. */
     onAdd: () => void;
 }
 
+/**
+ * A component representing a single menu item card.
+ * Displays the image, name, description, and price of the item.
+ * Includes animations for hover and tap interactions.
+ *
+ * @component
+ * @example
+ * <MenuItem item={pizzaItem} onAdd={addToCart} />
+ *
+ * @param {MenuItemProps} props - The component props.
+ * @returns {JSX.Element} The rendered menu item card.
+ */
 const MenuItem: React.FC<MenuItemProps> = ({ item, onAdd }) => {
     return (
         <motion.div

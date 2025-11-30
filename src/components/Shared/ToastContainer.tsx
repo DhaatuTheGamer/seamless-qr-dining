@@ -1,9 +1,24 @@
 import React from 'react';
 import { useToast, type ToastType } from '../../contexts/ToastContext';
 
+/**
+ * Component that renders the list of active toast notifications.
+ * It is positioned absolutely on the screen and manages the display of individual toast messages.
+ *
+ * @component
+ * @example
+ * <ToastContainer />
+ *
+ * @returns {JSX.Element} The rendered toast container.
+ */
 const ToastContainer: React.FC = () => {
     const { toasts, removeToast } = useToast();
 
+    /**
+     * Gets the icon for a given toast type.
+     * @param type - The type of toast.
+     * @returns {string} The icon character.
+     */
     const getIcon = (type: ToastType) => {
         switch (type) {
             case 'success': return '✅';
@@ -13,6 +28,11 @@ const ToastContainer: React.FC = () => {
         }
     };
 
+    /**
+     * Gets the CSS classes for a given toast type.
+     * @param type - The type of toast.
+     * @returns {string} The CSS classes string.
+     */
     const getStyles = (type: ToastType) => {
         switch (type) {
             case 'success': return 'bg-green-50 border-green-200 text-green-800';

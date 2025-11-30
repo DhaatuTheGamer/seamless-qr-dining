@@ -1,5 +1,15 @@
 import React from 'react';
 
+/**
+ * A loading skeleton component for the menu grid.
+ * Displays placeholder cards with a pulse animation to indicate data fetching.
+ *
+ * @component
+ * @example
+ * <MenuSkeleton />
+ *
+ * @returns {JSX.Element} The rendered skeleton component.
+ */
 const MenuSkeleton: React.FC = () => {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">

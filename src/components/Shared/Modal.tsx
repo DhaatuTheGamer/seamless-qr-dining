@@ -1,15 +1,38 @@
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
+/**
+ * Props for the Modal component.
+ */
 interface ModalProps {
+    /** Whether the modal is currently open. */
     isOpen: boolean;
+    /** Callback function to close the modal. */
     onClose: () => void;
+    /** The content to display inside the modal. */
     children: React.ReactNode;
+    /** Optional title for the modal header. */
     title?: string;
+    /** Additional CSS classes for the modal container (backdrop). */
     className?: string;
+    /** Additional CSS classes for the modal panel (content wrapper). */
     panelClassName?: string;
 }
 
+/**
+ * A modal dialog component.
+ * Renders on top of other content using a portal.
+ * Manages body scroll locking when open.
+ *
+ * @component
+ * @example
+ * <Modal isOpen={isOpen} onClose={closeModal} title="Confirmation">
+ *   <p>Are you sure?</p>
+ * </Modal>
+ *
+ * @param {ModalProps} props - The component props.
+ * @returns {JSX.Element | null} The rendered modal or null if closed.
+ */
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title, className, panelClassName }) => {
     useEffect(() => {
         if (isOpen) {

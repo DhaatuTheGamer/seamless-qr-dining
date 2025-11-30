@@ -2,11 +2,24 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useOrder } from '../../contexts/OrderContext';
 import Button from '../Shared/Button';
 
+/**
+ * The kitchen dashboard component.
+ * Displays orders in different states: New, Active (Preparing/Ready), and Completed.
+ * Provides functionality to update order statuses and plays a notification sound for new orders.
+ *
+ * @component
+ * @example
+ * <Dashboard />
+ *
+ * @returns {JSX.Element} The rendered dashboard component.
+ */
 const Dashboard: React.FC = () => {
     const { orders, updateOrderStatus } = useOrder();
     const prevOrdersLength = useRef(orders.length);
 
-    // Sound Alert Logic
+    /**
+     * Plays a notification sound for new orders using the Web Audio API.
+     */
     const playNotificationSound = () => {
         try {
             const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
@@ -33,6 +46,7 @@ const Dashboard: React.FC = () => {
         }
     };
 
+    // Effect to check for new orders and trigger sound
     useEffect(() => {
         if (orders.length > prevOrdersLength.current) {
             playNotificationSound();
@@ -45,6 +59,11 @@ const Dashboard: React.FC = () => {
     const activeOrders = orders.filter(o => o.status === 'preparing' || o.status === 'ready');
     const completedOrders = orders.filter(o => o.status === 'delivered' || o.status === 'completed');
 
+    /**
+     * Helper to format time elapsed since the order was placed.
+     * @param timestamp - The order timestamp.
+     * @returns {string} Formatted time string (e.g., "5m ago").
+     */
     const getTimeAgo = (timestamp: number) => {
         const diff = Math.floor((new Date().getTime() - new Date(timestamp).getTime()) / 60000);
         if (diff < 1) return 'Just now';
