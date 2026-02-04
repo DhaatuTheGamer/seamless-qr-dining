@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useOrder } from '../../contexts/OrderContext';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useOrder, Order } from '../../contexts/OrderContext';
 import Button from '../Shared/Button';
 
 /**
@@ -55,9 +55,27 @@ const Dashboard: React.FC = () => {
     }, [orders.length]);
 
     // Group orders by status
-    const newOrders = orders.filter(o => o.status === 'pending');
-    const activeOrders = orders.filter(o => o.status === 'preparing' || o.status === 'ready');
-    const completedOrders = orders.filter(o => o.status === 'delivered' || o.status === 'completed');
+    const { newOrders, activeOrders, completedOrders } = useMemo(() => {
+        const newList: Order[] = [];
+        const activeList: Order[] = [];
+        const completedList: Order[] = [];
+
+        for (const order of orders) {
+            if (order.status === 'pending') {
+                newList.push(order);
+            } else if (order.status === 'preparing' || order.status === 'ready') {
+                activeList.push(order);
+            } else if (order.status === 'delivered' || order.status === 'completed') {
+                completedList.push(order);
+            }
+        }
+
+        return {
+            newOrders: newList,
+            activeOrders: activeList,
+            completedOrders: completedList
+        };
+    }, [orders]);
 
     /**
      * Helper to format time elapsed since the order was placed.
