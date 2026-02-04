@@ -23,8 +23,14 @@ interface CartFloatingBarProps {
  */
 const CartFloatingBar: React.FC<CartFloatingBarProps> = ({ onOpenCart }) => {
     const { cart } = useOrder();
-    const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
-    const totalAmount = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const { itemCount, totalAmount } = cart.reduce(
+        (acc, item) => {
+            acc.itemCount += item.quantity;
+            acc.totalAmount += item.price * item.quantity;
+            return acc;
+        },
+        { itemCount: 0, totalAmount: 0 }
+    );
 
     return (
         <AnimatePresence>
