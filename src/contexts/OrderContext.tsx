@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, type ReactNode } from 'react';
 import type { MenuItem } from '../data/menu';
 import { useToast } from './ToastContext';
 
@@ -167,6 +167,7 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const [orders, setOrders] = useState<Order[]>([]);
     const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
     const [isInitialized, setIsInitialized] = useState(false);
+    const [isCartOpen, setIsCartOpen] = useState(false);
 
     useEffect(() => {
         const savedOrders = localStorage.getItem('orders');
@@ -206,7 +207,6 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         window.addEventListener('storage', handleStorageChange);
         return () => window.removeEventListener('storage', handleStorageChange);
     }, []);
-    const [isCartOpen, setIsCartOpen] = useState(false);
 
     /**
      * Adds a menu item to the cart.
@@ -214,7 +214,7 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
      * @param quantity - The quantity.
      * @param notes - Special instructions.
      */
-    const addToCart = (item: MenuItem, quantity: number, notes?: string) => {
+    const addToCart = useCallback((item: MenuItem, quantity: number, notes?: string) => {
         const newItem: CartItem = {
             ...item,
             cartId: Math.random().toString(36).substr(2, 9),
@@ -223,22 +223,22 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         };
         setCart(prev => [...prev, newItem]);
         addToast(`Added ${quantity}x ${item.name} to cart`, 'success');
-    };
+    }, [addToast]);
 
     /**
      * Removes an item from the cart.
      * @param cartId - The unique cart ID.
      */
-    const removeFromCart = (cartId: string) => {
+    const removeFromCart = useCallback((cartId: string) => {
         setCart(prev => prev.filter(item => item.cartId !== cartId));
-    };
+    }, []);
 
     /**
      * Updates the quantity of a cart item.
      * @param cartId - The unique cart ID.
      * @param delta - The change in quantity.
      */
-    const updateCartQuantity = (cartId: string, delta: number) => {
+    const updateCartQuantity = useCallback((cartId: string, delta: number) => {
         setCart(prev => prev.map(item => {
             if (item.cartId === cartId) {
                 const newQuantity = Math.max(0, item.quantity + delta);
@@ -246,10 +246,10 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
             }
             return item;
         }).filter(item => item.quantity > 0));
-    };
+    }, []);
 
     /** Clears the cart. */
-    const clearCart = () => setCart([]);
+    const clearCart = useCallback(() => setCart([]), []);
 
     /**
      * Places a new order.
@@ -257,7 +257,7 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
      * @param customerName - Name of the customer.
      * @param payNow - If true, marks as paid.
      */
-    const placeOrder = (tableId: string, customerName?: string, payNow: boolean = false) => {
+    const placeOrder = useCallback((tableId: string, customerName?: string, payNow: boolean = false) => {
         if (cart.length === 0) return;
 
         const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -276,29 +276,29 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         setOrders(prev => [newOrder, ...prev]);
         clearCart();
         addToast('Order placed successfully!', 'success');
-    };
+    }, [cart, addToast, clearCart]);
 
     /**
      * Updates an order's status.
      * @param orderId - The order ID.
      * @param status - The new status.
      */
-    const updateOrderStatus = (orderId: string, status: OrderStatus) => {
+    const updateOrderStatus = useCallback((orderId: string, status: OrderStatus) => {
         setOrders(prev => prev.map(order =>
             order.id === orderId ? { ...order, status } : order
         ));
         addToast(`Order #${orderId.substr(0, 4)} status: ${status}`, 'info');
-    };
+    }, [addToast]);
 
     /**
      * Toggles whether an order is paid.
      * @param orderId - The order ID.
      */
-    const toggleOrderPayment = (orderId: string) => {
+    const toggleOrderPayment = useCallback((orderId: string) => {
         setOrders(prev => prev.map(order =>
             order.id === orderId ? { ...order, isPaid: !order.isPaid } : order
         ));
-    };
+    }, []);
 
     /**
      * Creates a service request.
@@ -306,7 +306,7 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
      * @param type - Request type.
      * @param message - Optional message.
      */
-    const requestService = (tableId: string, type: ServiceRequestType, message?: string) => {
+    const requestService = useCallback((tableId: string, type: ServiceRequestType, message?: string) => {
         const newRequest: ServiceRequest = {
             id: Math.random().toString(36).substr(2, 9),
             tableId,
@@ -317,33 +317,49 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         };
         setServiceRequests(prev => [newRequest, ...prev]);
         addToast('Service request sent', 'info');
-    };
+    }, [addToast]);
 
     /**
      * Resolves a service request.
      * @param requestId - The request ID.
      */
-    const resolveServiceRequest = (requestId: string) => {
+    const resolveServiceRequest = useCallback((requestId: string) => {
         setServiceRequests(prev => prev.filter(req => req.id !== requestId));
-    };
+    }, []);
+
+    const contextValue = useMemo(() => ({
+        cart,
+        orders,
+        serviceRequests,
+        addToCart,
+        removeFromCart,
+        updateCartQuantity,
+        clearCart,
+        placeOrder,
+        updateOrderStatus,
+        toggleOrderPayment,
+        requestService,
+        resolveServiceRequest,
+        isCartOpen,
+        setIsCartOpen
+    }), [
+        cart,
+        orders,
+        serviceRequests,
+        addToCart,
+        removeFromCart,
+        updateCartQuantity,
+        clearCart,
+        placeOrder,
+        updateOrderStatus,
+        toggleOrderPayment,
+        requestService,
+        resolveServiceRequest,
+        isCartOpen
+    ]);
 
     return (
-        <OrderContext.Provider value={{
-            cart,
-            orders,
-            serviceRequests,
-            addToCart,
-            removeFromCart,
-            updateCartQuantity,
-            clearCart,
-            placeOrder,
-            updateOrderStatus,
-            toggleOrderPayment,
-            requestService,
-            resolveServiceRequest,
-            isCartOpen,
-            setIsCartOpen
-        }}>
+        <OrderContext.Provider value={contextValue}>
             {children}
         </OrderContext.Provider>
     );
