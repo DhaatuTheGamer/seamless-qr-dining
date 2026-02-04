@@ -1,11 +1,12 @@
-import { renderHook, act } from '@testing-library/react';
+import { renderHook, act, render, screen } from '@testing-library/react';
 import { OrderProvider, useOrder } from './OrderContext';
-import React from 'react';
+import React, { useState } from 'react';
 
-// Mock useToast
+// Mock useToast with stable reference
+const mockAddToast = jest.fn();
 jest.mock('./ToastContext', () => ({
   useToast: () => ({
-    addToast: jest.fn(),
+    addToast: mockAddToast,
   }),
 }));
 
@@ -90,5 +91,54 @@ describe('OrderContext Data Loss Bug', () => {
     const savedOrders = JSON.parse(localStorageMock.getItem('orders') || '[]');
     expect(savedOrders).toHaveLength(1);
     expect(savedOrders[0].items[0].name).toBe('Burger');
+  });
+
+  it('should not re-render consumers when provider parent re-renders if context value is unchanged', async () => {
+      // Consumer component that tracks renders
+      // We use React.memo to ensure it only re-renders if props or context change.
+      const RenderCounter = React.memo(({ onRender }: { onRender: () => void }) => {
+          useOrder(); // Consume context
+          onRender();
+          return <div>Render Counted</div>;
+      });
+
+      // Wrapper that renders OrderProvider directly to ensure it re-renders when state changes
+      const WrapperWithProvider = ({ onRender }: { onRender: jest.Mock }) => {
+          const [count, setCount] = useState(0);
+          return (
+              <div>
+                  <button data-testid="force-render" onClick={() => setCount(c => c + 1)}>
+                      Force Render {count}
+                  </button>
+                  <OrderProvider>
+                      <RenderCounter onRender={onRender} />
+                  </OrderProvider>
+              </div>
+          );
+      };
+
+      const renderSpy = jest.fn();
+
+      render(
+          <WrapperWithProvider onRender={renderSpy} />
+      );
+
+      // Wait for any initial effects (isInitialized)
+      await act(async () => {
+          await new Promise(resolve => setTimeout(resolve, 10));
+      });
+
+      const initialRenderCount = renderSpy.mock.calls.length;
+
+      // Force re-render of parent
+      const button = screen.getByTestId('force-render');
+      await act(async () => {
+          button.click();
+      });
+
+      const finalRenderCount = renderSpy.mock.calls.length;
+
+      // With optimization: Consumer should not re-render.
+      expect(finalRenderCount).toBe(initialRenderCount);
   });
 });
