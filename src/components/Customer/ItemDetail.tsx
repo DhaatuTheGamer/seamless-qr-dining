@@ -14,6 +14,14 @@ interface ItemDetailProps {
     onClose: () => void;
 }
 
+const COOK_LEVELS = ['Medium Rare', 'Medium', 'Medium Well'];
+const SIDES = ['French Fries', 'Sweet Potato Fries', 'Side Salad'];
+const ADDONS = [
+    { name: 'Extra Truffle Aioli', price: 1.00 },
+    { name: 'Applewood Smoked Bacon', price: 2.00 },
+    { name: 'Avocado', price: 1.50 }
+];
+
 /**
  * A modal component that displays detailed information about a menu item.
  * Allows users to select options (cook level, sides, add-ons), quantity, and add notes before adding to cart.
@@ -96,7 +104,7 @@ const ItemDetail: React.FC<ItemDetailProps> = ({ item, onClose }) => {
                                 <div>
                                     <h4 className="text-sm text-gray-400 mb-2">Cook Level</h4>
                                     <div className="space-y-2">
-                                        {['Medium Rare', 'Medium', 'Medium Well'].map(level => (
+                                        {COOK_LEVELS.map(level => (
                                             <label key={level} className="flex items-center gap-3 cursor-pointer group">
                                                 <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${cookLevel === level ? 'border-[#a0522d]' : 'border-gray-600 group-hover:border-gray-400'}`}>
                                                     {cookLevel === level && <div className="w-2.5 h-2.5 rounded-full bg-[#a0522d]"></div>}
@@ -110,7 +118,7 @@ const ItemDetail: React.FC<ItemDetailProps> = ({ item, onClose }) => {
                                 <div>
                                     <h4 className="text-sm text-gray-400 mb-2">Side</h4>
                                     <div className="space-y-2">
-                                        {['French Fries', 'Sweet Potato Fries', 'Side Salad'].map(s => (
+                                        {SIDES.map(s => (
                                             <label key={s} className="flex items-center gap-3 cursor-pointer group">
                                                 <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${side === s ? 'border-[#a0522d]' : 'border-gray-600 group-hover:border-gray-400'}`}>
                                                     {side === s && <div className="w-2.5 h-2.5 rounded-full bg-[#a0522d]"></div>}
@@ -128,11 +136,7 @@ const ItemDetail: React.FC<ItemDetailProps> = ({ item, onClose }) => {
                         <div>
                             <h3 className="font-bold text-lg mb-3">Add-ons</h3>
                             <div className="space-y-2">
-                                {[
-                                    { name: 'Extra Truffle Aioli', price: 1.00 },
-                                    { name: 'Applewood Smoked Bacon', price: 2.00 },
-                                    { name: 'Avocado', price: 1.50 }
-                                ].map(addon => (
+                                {ADDONS.map(addon => (
                                     <label key={addon.name} className="flex items-center gap-3 cursor-pointer group">
                                         <div className={`w-5 h-5 rounded border flex items-center justify-center ${addons.includes(addon.name) ? 'bg-[#a0522d] border-[#a0522d]' : 'border-gray-600 group-hover:border-gray-400'}`}>
                                             {addons.includes(addon.name) && <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>}
