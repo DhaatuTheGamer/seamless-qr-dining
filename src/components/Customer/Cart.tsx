@@ -43,9 +43,6 @@ const Cart: React.FC<CartProps> = ({ onClose, tableId }) => {
      */
     const handlePlaceOrder = async () => {
         setIsProcessing(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1500));
-
         placeOrder(tableId, user?.name, paymentMethod === 'now');
         setOrderPlaced(true);
         setIsProcessing(false);

@@ -66,17 +66,17 @@ function RootLayout({ children }) {
                 children: children
             }, void 0, false, {
                 fileName: "[project]/src/app/layout.tsx",
-                lineNumber: 16,
+                lineNumber: 33,
                 columnNumber: 17
             }, this)
         }, void 0, false, {
             fileName: "[project]/src/app/layout.tsx",
-            lineNumber: 15,
+            lineNumber: 32,
             columnNumber: 13
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/app/layout.tsx",
-        lineNumber: 14,
+        lineNumber: 31,
         columnNumber: 9
     }, this);
 }

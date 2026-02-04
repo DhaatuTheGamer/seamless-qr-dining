@@ -29,7 +29,11 @@ const useToast = ()=>{
 };
 const ToastProvider = ({ children })=>{
     const [toasts, setToasts] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
-    const addToast = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])((message, type = 'info')=>{
+    /**
+     * Adds a new toast.
+     * @param message - The message to display.
+     * @param type - The type of toast.
+     */ const addToast = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])((message, type = 'info')=>{
         const id = Math.random().toString(36).substr(2, 9);
         setToasts((prev)=>[
                 ...prev,
@@ -44,7 +48,10 @@ const ToastProvider = ({ children })=>{
             setToasts((prev)=>prev.filter((t)=>t.id !== id));
         }, 3000);
     }, []);
-    const removeToast = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])((id)=>{
+    /**
+     * Removes a toast.
+     * @param id - The ID of the toast to remove.
+     */ const removeToast = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useCallback"])((id)=>{
         setToasts((prev)=>prev.filter((t)=>t.id !== id));
     }, []);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(ToastContext.Provider, {
@@ -56,7 +63,7 @@ const ToastProvider = ({ children })=>{
         children: children
     }, void 0, false, {
         fileName: "[project]/src/contexts/ToastContext.tsx",
-        lineNumber: 46,
+        lineNumber: 91,
         columnNumber: 9
     }, ("TURBOPACK compile-time value", void 0));
 };
@@ -85,21 +92,29 @@ const useAuth = ()=>{
 };
 const AuthProvider = ({ children })=>{
     const [user, setUser] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(null);
-    const login = (name, phone)=>{
+    /**
+     * Logs a user in.
+     * @param name - The name of the user.
+     * @param phone - The phone number of the user.
+     */ const login = (name, phone)=>{
         setUser({
             name,
             phone,
             isGuest: false
         });
     };
-    const loginAsGuest = ()=>{
+    /**
+     * Logs a user in as a guest.
+     */ const loginAsGuest = ()=>{
         setUser({
             name: 'Guest',
             phone: '',
             isGuest: true
         });
     };
-    const logout = ()=>{
+    /**
+     * Logs the current user out.
+     */ const logout = ()=>{
         setUser(null);
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(AuthContext.Provider, {
@@ -113,7 +128,7 @@ const AuthProvider = ({ children })=>{
         children: children
     }, void 0, false, {
         fileName: "[project]/src/contexts/AuthContext.tsx",
-        lineNumber: 44,
+        lineNumber: 91,
         columnNumber: 9
     }, ("TURBOPACK compile-time value", void 0));
 };
@@ -147,23 +162,31 @@ const OrderProvider = ({ children })=>{
     const [cart, setCart] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
     const [orders, setOrders] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
     const [serviceRequests, setServiceRequests] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])([]);
+    const [isInitialized, setIsInitialized] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
         const savedOrders = localStorage.getItem('orders');
         if (savedOrders) setOrders(JSON.parse(savedOrders));
         const savedRequests = localStorage.getItem('serviceRequests');
         if (savedRequests) setServiceRequests(JSON.parse(savedRequests));
+        setIsInitialized(true);
     }, []);
     // Persist orders
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
-        localStorage.setItem('orders', JSON.stringify(orders));
+        if (isInitialized) {
+            localStorage.setItem('orders', JSON.stringify(orders));
+        }
     }, [
-        orders
+        orders,
+        isInitialized
     ]);
     // Persist service requests
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
-        localStorage.setItem('serviceRequests', JSON.stringify(serviceRequests));
+        if (isInitialized) {
+            localStorage.setItem('serviceRequests', JSON.stringify(serviceRequests));
+        }
     }, [
-        serviceRequests
+        serviceRequests,
+        isInitialized
     ]);
     // Sync across tabs
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useEffect"])(()=>{
@@ -179,7 +202,12 @@ const OrderProvider = ({ children })=>{
         return ()=>window.removeEventListener('storage', handleStorageChange);
     }, []);
     const [isCartOpen, setIsCartOpen] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
-    const addToCart = (item, quantity, notes)=>{
+    /**
+     * Adds a menu item to the cart.
+     * @param item - The item to add.
+     * @param quantity - The quantity.
+     * @param notes - Special instructions.
+     */ const addToCart = (item, quantity, notes)=>{
         const newItem = {
             ...item,
             cartId: Math.random().toString(36).substr(2, 9),
@@ -192,10 +220,17 @@ const OrderProvider = ({ children })=>{
             ]);
         addToast(`Added ${quantity}x ${item.name} to cart`, 'success');
     };
-    const removeFromCart = (cartId)=>{
+    /**
+     * Removes an item from the cart.
+     * @param cartId - The unique cart ID.
+     */ const removeFromCart = (cartId)=>{
         setCart((prev)=>prev.filter((item)=>item.cartId !== cartId));
     };
-    const updateCartQuantity = (cartId, delta)=>{
+    /**
+     * Updates the quantity of a cart item.
+     * @param cartId - The unique cart ID.
+     * @param delta - The change in quantity.
+     */ const updateCartQuantity = (cartId, delta)=>{
         setCart((prev)=>prev.map((item)=>{
                 if (item.cartId === cartId) {
                     const newQuantity = Math.max(0, item.quantity + delta);
@@ -207,8 +242,13 @@ const OrderProvider = ({ children })=>{
                 return item;
             }).filter((item)=>item.quantity > 0));
     };
-    const clearCart = ()=>setCart([]);
-    const placeOrder = (tableId, customerName, payNow = false)=>{
+    /** Clears the cart. */ const clearCart = ()=>setCart([]);
+    /**
+     * Places a new order.
+     * @param tableId - Table identifier.
+     * @param customerName - Name of the customer.
+     * @param payNow - If true, marks as paid.
+     */ const placeOrder = (tableId, customerName, payNow = false)=>{
         if (cart.length === 0) return;
         const total = cart.reduce((sum, item)=>sum + item.price * item.quantity, 0);
         const newOrder = {
@@ -230,24 +270,32 @@ const OrderProvider = ({ children })=>{
         clearCart();
         addToast('Order placed successfully!', 'success');
     };
-    const updateOrderStatus = (orderId, status)=>{
+    /**
+     * Updates an order's status.
+     * @param orderId - The order ID.
+     * @param status - The new status.
+     */ const updateOrderStatus = (orderId, status)=>{
         setOrders((prev)=>prev.map((order)=>order.id === orderId ? {
                     ...order,
                     status
                 } : order));
-        // Only show toast if it's a status update from kitchen (simulated here, but usually would be via socket/polling)
-        // For this demo, we might not want to spam toasts if the user is the one doing it (e.g. kitchen view)
-        // But since this context is shared, we can check if we are in kitchen view? 
-        // Actually, let's just show toast.
         addToast(`Order #${orderId.substr(0, 4)} status: ${status}`, 'info');
     };
-    const toggleOrderPayment = (orderId)=>{
+    /**
+     * Toggles whether an order is paid.
+     * @param orderId - The order ID.
+     */ const toggleOrderPayment = (orderId)=>{
         setOrders((prev)=>prev.map((order)=>order.id === orderId ? {
                     ...order,
                     isPaid: !order.isPaid
                 } : order));
     };
-    const requestService = (tableId, type, message)=>{
+    /**
+     * Creates a service request.
+     * @param tableId - The table ID.
+     * @param type - Request type.
+     * @param message - Optional message.
+     */ const requestService = (tableId, type, message)=>{
         const newRequest = {
             id: Math.random().toString(36).substr(2, 9),
             tableId,
@@ -262,7 +310,10 @@ const OrderProvider = ({ children })=>{
             ]);
         addToast('Service request sent', 'info');
     };
-    const resolveServiceRequest = (requestId)=>{
+    /**
+     * Resolves a service request.
+     * @param requestId - The request ID.
+     */ const resolveServiceRequest = (requestId)=>{
         setServiceRequests((prev)=>prev.filter((req)=>req.id !== requestId));
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(OrderContext.Provider, {
@@ -285,7 +336,7 @@ const OrderProvider = ({ children })=>{
         children: children
     }, void 0, false, {
         fileName: "[project]/src/contexts/OrderContext.tsx",
-        lineNumber: 186,
+        lineNumber: 331,
         columnNumber: 9
     }, ("TURBOPACK compile-time value", void 0));
 };
@@ -301,9 +352,22 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$contexts$2f$ToastContext$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/contexts/ToastContext.tsx [app-ssr] (ecmascript)");
 ;
 ;
-const ToastContainer = ()=>{
+/**
+ * Component that renders the list of active toast notifications.
+ * It is positioned absolutely on the screen and manages the display of individual toast messages.
+ *
+ * @component
+ * @example
+ * <ToastContainer />
+ *
+ * @returns {JSX.Element} The rendered toast container.
+ */ const ToastContainer = ()=>{
     const { toasts, removeToast } = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$contexts$2f$ToastContext$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useToast"])();
-    const getIcon = (type)=>{
+    /**
+     * Gets the icon for a given toast type.
+     * @param type - The type of toast.
+     * @returns {string} The icon character.
+     */ const getIcon = (type)=>{
         switch(type){
             case 'success':
                 return '✅';
@@ -315,7 +379,11 @@ const ToastContainer = ()=>{
                 return 'ℹ️';
         }
     };
-    const getStyles = (type)=>{
+    /**
+     * Gets the CSS classes for a given toast type.
+     * @param type - The type of toast.
+     * @returns {string} The CSS classes string.
+     */ const getStyles = (type)=>{
         switch(type){
             case 'success':
                 return 'bg-green-50 border-green-200 text-green-800';
@@ -337,7 +405,7 @@ const ToastContainer = ()=>{
                         children: getIcon(toast.type)
                     }, void 0, false, {
                         fileName: "[project]/src/components/Shared/ToastContainer.tsx",
-                        lineNumber: 32,
+                        lineNumber: 52,
                         columnNumber: 21
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -345,7 +413,7 @@ const ToastContainer = ()=>{
                         children: toast.message
                     }, void 0, false, {
                         fileName: "[project]/src/components/Shared/ToastContainer.tsx",
-                        lineNumber: 33,
+                        lineNumber: 53,
                         columnNumber: 21
                     }, ("TURBOPACK compile-time value", void 0)),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -354,18 +422,18 @@ const ToastContainer = ()=>{
                         children: "×"
                     }, void 0, false, {
                         fileName: "[project]/src/components/Shared/ToastContainer.tsx",
-                        lineNumber: 34,
+                        lineNumber: 54,
                         columnNumber: 21
                     }, ("TURBOPACK compile-time value", void 0))
                 ]
             }, toast.id, true, {
                 fileName: "[project]/src/components/Shared/ToastContainer.tsx",
-                lineNumber: 28,
+                lineNumber: 48,
                 columnNumber: 17
             }, ("TURBOPACK compile-time value", void 0)))
     }, void 0, false, {
         fileName: "[project]/src/components/Shared/ToastContainer.tsx",
-        lineNumber: 26,
+        lineNumber: 46,
         columnNumber: 9
     }, ("TURBOPACK compile-time value", void 0));
 };
@@ -397,23 +465,23 @@ function Providers({ children }) {
                     children,
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$src$2f$components$2f$Shared$2f$ToastContainer$2e$tsx__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                         fileName: "[project]/src/components/Providers.tsx",
-                        lineNumber: 13,
+                        lineNumber: 28,
                         columnNumber: 21
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/components/Providers.tsx",
-                lineNumber: 11,
+                lineNumber: 26,
                 columnNumber: 17
             }, this)
         }, void 0, false, {
             fileName: "[project]/src/components/Providers.tsx",
-            lineNumber: 10,
+            lineNumber: 25,
             columnNumber: 13
         }, this)
     }, void 0, false, {
         fileName: "[project]/src/components/Providers.tsx",
-        lineNumber: 9,
+        lineNumber: 24,
         columnNumber: 9
     }, this);
 }
