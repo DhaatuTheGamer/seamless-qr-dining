@@ -13,6 +13,28 @@ import Button from '../Shared/Button';
  *
  * @returns {JSX.Element} The rendered dashboard component.
  */
+export const groupOrdersByStatus = (orders: Order[]) => {
+    const newOrders: Order[] = [];
+    const activeOrders: Order[] = [];
+    const completedOrders: Order[] = [];
+
+    for (const order of orders) {
+        if (order.status === 'pending') {
+            newOrders.push(order);
+        } else if (order.status === 'preparing' || order.status === 'ready') {
+            activeOrders.push(order);
+        } else if (order.status === 'delivered' || order.status === 'completed') {
+            completedOrders.push(order);
+        }
+    }
+
+    return {
+        newOrders,
+        activeOrders,
+        completedOrders
+    };
+};
+
 const Dashboard: React.FC = () => {
     const { orders, updateOrderStatus } = useOrder();
     const prevOrdersLength = useRef(orders.length);
@@ -55,27 +77,7 @@ const Dashboard: React.FC = () => {
     }, [orders.length]);
 
     // Group orders by status
-    const { newOrders, activeOrders, completedOrders } = useMemo(() => {
-        const newList: Order[] = [];
-        const activeList: Order[] = [];
-        const completedList: Order[] = [];
-
-        for (const order of orders) {
-            if (order.status === 'pending') {
-                newList.push(order);
-            } else if (order.status === 'preparing' || order.status === 'ready') {
-                activeList.push(order);
-            } else if (order.status === 'delivered' || order.status === 'completed') {
-                completedList.push(order);
-            }
-        }
-
-        return {
-            newOrders: newList,
-            activeOrders: activeList,
-            completedOrders: completedList
-        };
-    }, [orders]);
+    const { newOrders, activeOrders, completedOrders } = useMemo(() => groupOrdersByStatus(orders), [orders]);
 
     /**
      * Helper to format time elapsed since the order was placed.
