@@ -33,14 +33,6 @@ const ADDONS = [
  * @param {ItemDetailProps} props - The component props.
  * @returns {JSX.Element} The rendered item detail modal.
  */
-const COOK_LEVELS = ['Medium Rare', 'Medium', 'Medium Well'];
-const SIDES = ['French Fries', 'Sweet Potato Fries', 'Side Salad'];
-const ADDONS = [
-    { name: 'Extra Truffle Aioli', price: 1.00 },
-    { name: 'Applewood Smoked Bacon', price: 2.00 },
-    { name: 'Avocado', price: 1.50 }
-];
-
 const ItemDetail: React.FC<ItemDetailProps> = ({ item, onClose }) => {
     const { addToCart } = useOrder();
     const [quantity, setQuantity] = useState(1);
