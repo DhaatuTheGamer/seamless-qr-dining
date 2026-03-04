@@ -85,7 +85,7 @@ const Dashboard: React.FC = () => {
      * @returns {string} Formatted time string (e.g., "5m ago").
      */
     const getTimeAgo = (timestamp: number) => {
-        const diff = Math.floor((new Date().getTime() - new Date(timestamp).getTime()) / 60000);
+        const diff = Math.floor((Date.now() - timestamp) / 60000);
         if (diff < 1) return 'Just now';
         return `${diff}m ago`;
     };
