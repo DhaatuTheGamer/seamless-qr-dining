@@ -77,6 +77,10 @@ interface OrderContextType {
     orders: Order[];
     /** List of active service requests. */
     serviceRequests: ServiceRequest[];
+    /** The total cost of all items in the cart. */
+    cartTotal: number;
+    /** The total number of items in the cart. */
+    cartItemCount: number;
     /**
      * Adds an item to the cart.
      * @param item - The menu item to add.
@@ -169,6 +173,20 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
     const [isInitialized, setIsInitialized] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
+
+    /**
+     * Memoized cart totals to prevent unnecessary recalculations.
+     */
+    const { cartTotal, cartItemCount } = useMemo(() => {
+        return cart.reduce(
+            (acc, item) => {
+                acc.cartTotal += item.price * item.quantity;
+                acc.cartItemCount += item.quantity;
+                return acc;
+            },
+            { cartTotal: 0, cartItemCount: 0 }
+        );
+    }, [cart]);
 
     useEffect(() => {
         let isCancelled = false;
@@ -304,15 +322,13 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const placeOrder = useCallback((tableId: string, customerName?: string, payNow: boolean = false) => {
         if (cart.length === 0) return;
 
-        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
         const newOrder: Order = {
             id: Math.random().toString(36).substr(2, 9),
             tableId,
             items: [...cart],
             status: 'pending',
             timestamp: Date.now(),
-            total,
+            total: cartTotal,
             isPaid: payNow,
             customerName
         };
@@ -320,7 +336,7 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         setOrders(prev => [newOrder, ...prev]);
         clearCart();
         addToast('Order placed successfully!', 'success');
-    }, [cart, addToast, clearCart]);
+    }, [cart, cartTotal, addToast, clearCart]);
 
     /**
      * Updates an order's status.
@@ -373,6 +389,8 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
     const contextValue = useMemo(() => ({
         cart,
+        cartTotal,
+        cartItemCount,
         orders,
         serviceRequests,
         addToCart,
@@ -388,6 +406,8 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         setIsCartOpen
     }), [
         cart,
+        cartTotal,
+        cartItemCount,
         orders,
         serviceRequests,
         addToCart,
