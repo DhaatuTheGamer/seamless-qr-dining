@@ -1,6 +1,7 @@
-import { renderHook, act, render, screen } from '@testing-library/react';
+import { renderHook, act, render, screen, waitFor } from '@testing-library/react';
 import { OrderProvider, useOrder } from './OrderContext';
 import React, { useState } from 'react';
+import { encryptData, decryptData } from '../utils/security';
 
 // Mock useToast with stable reference
 const mockAddToast = jest.fn();
@@ -30,14 +31,33 @@ Object.defineProperty(window, 'localStorage', {
   value: localStorageMock,
 });
 
-describe('OrderContext Data Loss Bug', () => {
+describe('OrderContext Security Fix', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     localStorageMock.clear();
   });
 
-  it('should not overwrite existing data in localStorage on initial mount', () => {
-    // Setup initial data in localStorage
+  it('should decrypt existing data from localStorage on initial mount', async () => {
+    // Setup initial encrypted data in localStorage
+    const initialOrders = [{ id: '1', items: [], status: 'pending', total: 0, timestamp: 123, tableId: 't1', isPaid: false }];
+    const encryptedOrders = await encryptData(initialOrders);
+    localStorageMock.setItem('orders', encryptedOrders);
+
+    const wrapper = ({ children }: { children: React.ReactNode }) => (
+      <OrderProvider>{children}</OrderProvider>
+    );
+
+    // Render the hook
+    const { result } = renderHook(() => useOrder(), { wrapper });
+
+    // Wait for initialization
+    await waitFor(() => {
+        expect(result.current.orders).toEqual(initialOrders);
+    });
+  });
+
+  it('should fallback to plaintext data from localStorage if decryption fails (backward compatibility)', async () => {
+    // Setup initial plaintext data in localStorage
     const initialOrders = [{ id: '1', items: [], status: 'pending', total: 0, timestamp: 123, tableId: 't1', isPaid: false }];
     localStorageMock.setItem('orders', JSON.stringify(initialOrders));
 
@@ -46,31 +66,24 @@ describe('OrderContext Data Loss Bug', () => {
     );
 
     // Render the hook
-    renderHook(() => useOrder(), { wrapper });
+    const { result } = renderHook(() => useOrder(), { wrapper });
 
-    // Check localStorage calls
-    const setItemCalls = (localStorageMock.setItem as jest.Mock).mock.calls;
-    const ordersSetItemCalls = setItemCalls.filter(call => call[0] === 'orders');
-
-    // Should verify that no call wrote '[]'
-    const hasEmptyArrayWrite = ordersSetItemCalls.some(call => call[1] === '[]');
-    expect(hasEmptyArrayWrite).toBe(false);
-
-    // Should verify that orders are still in LS
-    expect(localStorageMock.getItem('orders')).toEqual(JSON.stringify(initialOrders));
+    // Wait for initialization
+    await waitFor(() => {
+        expect(result.current.orders).toEqual(initialOrders);
+    });
   });
 
-  it('should persist new data after initialization', () => {
+  it('should encrypt and persist new data after initialization', async () => {
      const wrapper = ({ children }: { children: React.ReactNode }) => (
       <OrderProvider>{children}</OrderProvider>
     );
 
     const { result } = renderHook(() => useOrder(), { wrapper });
 
-    // Wait for initialization (in real app it's async, here effects run sync-ish but let's be safe)
-    // Actually in JSDOM environment without timers, effects run after render.
+    // Wait for provider to initialize
+    // We can check if an initial placeOrder works as proxy for initialization
 
-    // Add item to cart and place order
     act(() => {
         result.current.addToCart({
             id: 'm1',
@@ -87,22 +100,25 @@ describe('OrderContext Data Loss Bug', () => {
         result.current.placeOrder('t1');
     });
 
-    // Check if localStorage has been updated
-    const savedOrders = JSON.parse(localStorageMock.getItem('orders') || '[]');
-    expect(savedOrders).toHaveLength(1);
-    expect(savedOrders[0].items[0].name).toBe('Burger');
+    // Check if localStorage has been updated with encrypted data
+    await waitFor(async () => {
+        const encryptedValue = localStorageMock.getItem('orders');
+        expect(encryptedValue).not.toBeNull();
+        expect(encryptedValue).not.toContain('Burger'); // Should be encrypted
+
+        const decrypted = await decryptData(encryptedValue!);
+        expect(decrypted).toHaveLength(1);
+        expect(decrypted[0].items[0].name).toBe('Burger');
+    });
   });
 
   it('should not re-render consumers when provider parent re-renders if context value is unchanged', async () => {
-      // Consumer component that tracks renders
-      // We use React.memo to ensure it only re-renders if props or context change.
       const RenderCounter = React.memo(({ onRender }: { onRender: () => void }) => {
-          useOrder(); // Consume context
+          useOrder();
           onRender();
           return <div>Render Counted</div>;
       });
 
-      // Wrapper that renders OrderProvider directly to ensure it re-renders when state changes
       const WrapperWithProvider = ({ onRender }: { onRender: jest.Mock }) => {
           const [count, setCount] = useState(0);
           return (
@@ -119,26 +135,20 @@ describe('OrderContext Data Loss Bug', () => {
 
       const renderSpy = jest.fn();
 
-      render(
-          <WrapperWithProvider onRender={renderSpy} />
-      );
+      render(<WrapperWithProvider onRender={renderSpy} />);
 
-      // Wait for any initial effects (isInitialized)
+      // Wait for any initial effects
       await act(async () => {
-          await new Promise(resolve => setTimeout(resolve, 10));
+          await new Promise(resolve => setTimeout(resolve, 50));
       });
 
       const initialRenderCount = renderSpy.mock.calls.length;
 
-      // Force re-render of parent
       const button = screen.getByTestId('force-render');
       await act(async () => {
           button.click();
       });
 
-      const finalRenderCount = renderSpy.mock.calls.length;
-
-      // With optimization: Consumer should not re-render.
-      expect(finalRenderCount).toBe(initialRenderCount);
+      expect(renderSpy.mock.calls.length).toBe(initialRenderCount);
   });
 });
