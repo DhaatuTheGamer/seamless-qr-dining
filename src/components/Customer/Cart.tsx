@@ -26,16 +26,15 @@ interface CartProps {
  * @returns {JSX.Element} The rendered cart component.
  */
 const Cart: React.FC<CartProps> = ({ onClose, tableId }) => {
-    const { cart, updateCartQuantity, placeOrder, removeFromCart } = useOrder();
+    const { cart, cartTotal, updateCartQuantity, placeOrder, removeFromCart } = useOrder();
     const { user } = useAuth();
     const [isProcessing, setIsProcessing] = useState(false);
     const [orderPlaced, setOrderPlaced] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState<'now' | 'later'>('now');
     const [notes, setNotes] = useState('');
 
-    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const tax = total * 0.1; // 10% tax
-    const finalTotal = total + tax;
+    const tax = cartTotal * 0.1; // 10% tax
+    const finalTotal = cartTotal + tax;
 
     /**
      * Handles the order placement process.
@@ -145,7 +144,7 @@ const Cart: React.FC<CartProps> = ({ onClose, tableId }) => {
                                 <div className="mt-8 pt-6 border-t border-gray-100 space-y-3">
                                     <div className="flex justify-between text-gray-500">
                                         <span>Subtotal</span>
-                                        <span>${total.toFixed(2)}</span>
+                                        <span>${cartTotal.toFixed(2)}</span>
                                     </div>
                                     <div className="flex justify-between text-gray-500">
                                         <span>Tax (10%)</span>

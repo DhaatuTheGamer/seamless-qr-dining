@@ -22,19 +22,11 @@ interface CartFloatingBarProps {
  * @returns {JSX.Element} The rendered floating bar component.
  */
 const CartFloatingBar: React.FC<CartFloatingBarProps> = ({ onOpenCart }) => {
-    const { cart } = useOrder();
-    const { itemCount, totalAmount } = cart.reduce(
-        (acc, item) => {
-            acc.itemCount += item.quantity;
-            acc.totalAmount += item.price * item.quantity;
-            return acc;
-        },
-        { itemCount: 0, totalAmount: 0 }
-    );
+    const { cartItemCount, cartTotal } = useOrder();
 
     return (
         <AnimatePresence>
-            {itemCount > 0 && (
+            {cartItemCount > 0 && (
                 <motion.div
                     initial={{ y: 100, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
@@ -48,11 +40,11 @@ const CartFloatingBar: React.FC<CartFloatingBarProps> = ({ onOpenCart }) => {
                     >
                         <div className="flex items-center gap-3">
                             <div className="bg-white/20 w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg">
-                                {itemCount}
+                                {cartItemCount}
                             </div>
                             <div className="flex flex-col items-start">
                                 <span className="text-xs text-emerald-100 font-medium uppercase tracking-wider">Total</span>
-                                <span className="font-bold text-lg">${totalAmount.toFixed(2)}</span>
+                                <span className="font-bold text-lg">${cartTotal.toFixed(2)}</span>
                             </div>
                         </div>
                         <div className="flex items-center gap-2 font-bold tracking-wide">
