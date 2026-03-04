@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, type ReactNode } from 'react';
 import type { MenuItem } from '../data/menu';
 import { useToast } from './ToastContext';
+import { encryptData, decryptData } from '../utils/security';
 
 /**
  * Represents an item in the shopping cart.
@@ -170,37 +171,80 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const [isCartOpen, setIsCartOpen] = useState(false);
 
     useEffect(() => {
-        const savedOrders = localStorage.getItem('orders');
-        if (savedOrders) setOrders(JSON.parse(savedOrders));
+        let isCancelled = false;
 
-        const savedRequests = localStorage.getItem('serviceRequests');
-        if (savedRequests) setServiceRequests(JSON.parse(savedRequests));
+        const initData = async () => {
+            try {
+                const savedOrders = localStorage.getItem('orders');
+                if (savedOrders && !isCancelled) {
+                    // Try to decrypt; if it fails, decryptData returns null
+                    const decrypted = await decryptData(savedOrders);
+                    if (decrypted) {
+                        setOrders(decrypted);
+                    } else {
+                        // If decryption fails, it might be old plaintext data
+                        try {
+                            setOrders(JSON.parse(savedOrders));
+                        } catch (e) {
+                            console.error("Failed to parse orders:", e);
+                        }
+                    }
+                }
 
-        setIsInitialized(true);
+                const savedRequests = localStorage.getItem('serviceRequests');
+                if (savedRequests && !isCancelled) {
+                    const decrypted = await decryptData(savedRequests);
+                    if (decrypted) {
+                        setServiceRequests(decrypted);
+                    } else {
+                        try {
+                            setServiceRequests(JSON.parse(savedRequests));
+                        } catch (e) {
+                            console.error("Failed to parse service requests:", e);
+                        }
+                    }
+                }
+            } finally {
+                if (!isCancelled) setIsInitialized(true);
+            }
+        };
+
+        initData();
+        return () => { isCancelled = true; };
     }, []);
 
     // Persist orders
     useEffect(() => {
         if (isInitialized) {
-            localStorage.setItem('orders', JSON.stringify(orders));
+            const persistOrders = async () => {
+                const encrypted = await encryptData(orders);
+                localStorage.setItem('orders', encrypted);
+            };
+            persistOrders();
         }
     }, [orders, isInitialized]);
 
     // Persist service requests
     useEffect(() => {
         if (isInitialized) {
-            localStorage.setItem('serviceRequests', JSON.stringify(serviceRequests));
+            const persistRequests = async () => {
+                const encrypted = await encryptData(serviceRequests);
+                localStorage.setItem('serviceRequests', encrypted);
+            };
+            persistRequests();
         }
     }, [serviceRequests, isInitialized]);
 
     // Sync across tabs
     useEffect(() => {
-        const handleStorageChange = (e: StorageEvent) => {
+        const handleStorageChange = async (e: StorageEvent) => {
             if (e.key === 'orders' && e.newValue) {
-                setOrders(JSON.parse(e.newValue));
+                const decrypted = await decryptData(e.newValue);
+                if (decrypted) setOrders(decrypted);
             }
             if (e.key === 'serviceRequests' && e.newValue) {
-                setServiceRequests(JSON.parse(e.newValue));
+                const decrypted = await decryptData(e.newValue);
+                if (decrypted) setServiceRequests(decrypted);
             }
         };
 
