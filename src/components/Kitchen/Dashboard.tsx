@@ -44,7 +44,7 @@ const Dashboard: React.FC = () => {
      */
     const playNotificationSound = () => {
         try {
-            const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+            const AudioContext = window.AudioContext || (window as typeof window & { webkitAudioContext?: typeof window.AudioContext }).webkitAudioContext;
             if (!AudioContext) return;
 
             const ctx = new AudioContext();
