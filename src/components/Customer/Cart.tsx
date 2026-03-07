@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useOrder } from '../../contexts/OrderContext';
 import { useAuth } from '../../contexts/AuthContext';
 import Button from '../Shared/Button';
@@ -33,8 +33,13 @@ const Cart: React.FC<CartProps> = ({ onClose, tableId }) => {
     const [paymentMethod, setPaymentMethod] = useState<'now' | 'later'>('now');
     const [notes, setNotes] = useState('');
 
-    const tax = cartTotal * 0.1; // 10% tax
-    const finalTotal = cartTotal + tax;
+    const { tax, finalTotal } = useMemo(() => {
+        const calculatedTax = cartTotal * 0.1; // 10% tax
+        return {
+            tax: calculatedTax,
+            finalTotal: cartTotal + calculatedTax
+        };
+    }, [cartTotal]);
 
     /**
      * Handles the order placement process.
