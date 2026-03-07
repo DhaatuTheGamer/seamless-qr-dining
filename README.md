@@ -44,7 +44,7 @@ Follow these instructions to set up the project locally.
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/your-username/seamless-qr-dining.git
+   git clone https://github.com/DhaatuTheGamer/seamless-qr-dining
    cd seamless-qr-dining
    ```
 
