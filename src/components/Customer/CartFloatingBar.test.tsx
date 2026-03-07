@@ -18,6 +18,8 @@ describe('CartFloatingBar', () => {
   it('does not render when cart is empty', () => {
     (useOrder as jest.Mock).mockReturnValue({
       cart: [],
+      cartItemCount: 0,
+      cartTotal: 0,
     });
 
     render(<CartFloatingBar onOpenCart={mockOnOpenCart} />);
@@ -31,6 +33,8 @@ describe('CartFloatingBar', () => {
         { price: 10, quantity: 2 },
         { price: 5, quantity: 1 },
       ],
+      cartItemCount: 3,
+      cartTotal: 25,
     });
 
     render(<CartFloatingBar onOpenCart={mockOnOpenCart} />);
@@ -45,6 +49,8 @@ describe('CartFloatingBar', () => {
   it('calls onOpenCart when clicked', () => {
     (useOrder as jest.Mock).mockReturnValue({
       cart: [{ price: 10, quantity: 1 }],
+      cartItemCount: 1,
+      cartTotal: 10,
     });
 
     render(<CartFloatingBar onOpenCart={mockOnOpenCart} />);
