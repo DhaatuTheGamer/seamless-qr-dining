@@ -1,6 +1,16 @@
 require('@testing-library/jest-dom');
-const { webcrypto } = require('node:crypto');
+const crypto = require('crypto');
+const { TextEncoder, TextDecoder } = require('util');
 
-if (!global.crypto) {
-    global.crypto = webcrypto;
+if (!global.crypto || !global.crypto.subtle) {
+    Object.defineProperty(global, 'crypto', {
+        value: crypto.webcrypto,
+        writable: true
+    });
+}
+if (!global.TextEncoder) {
+    global.TextEncoder = TextEncoder;
+}
+if (!global.TextDecoder) {
+    global.TextDecoder = TextDecoder;
 }

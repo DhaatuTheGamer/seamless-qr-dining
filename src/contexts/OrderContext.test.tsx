@@ -37,6 +37,17 @@ describe('OrderContext Security Fix', () => {
     localStorageMock.clear();
   });
 
+  it('should throw an error when useOrder is used outside of OrderProvider', () => {
+    // Suppress console.error for this expected error to keep test output clean
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    expect(() => {
+      renderHook(() => useOrder());
+    }).toThrow('useOrder must be used within an OrderProvider');
+
+    consoleSpy.mockRestore();
+  });
+
   it('should decrypt existing data from localStorage on initial mount', async () => {
     // Setup initial encrypted data in localStorage
     const initialOrders = [{ id: '1', items: [], status: 'pending', total: 0, timestamp: 123, tableId: 't1', isPaid: false }];

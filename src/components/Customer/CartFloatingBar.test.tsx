@@ -27,6 +27,8 @@ describe('CartFloatingBar', () => {
 
   it('renders correctly when cart has items', () => {
     (useOrder as jest.Mock).mockReturnValue({
+      cartItemCount: 3,
+      cartTotal: 25,
       cart: [
         { price: 10, quantity: 2 },
         { price: 5, quantity: 1 },
@@ -44,6 +46,8 @@ describe('CartFloatingBar', () => {
 
   it('calls onOpenCart when clicked', () => {
     (useOrder as jest.Mock).mockReturnValue({
+      cartItemCount: 1,
+      cartTotal: 10,
       cart: [{ price: 10, quantity: 1 }],
     });
 
