@@ -65,20 +65,34 @@ const Login: React.FC<LoginProps> = ({ tableId: initialTableId }) => {
 
     /**
      * Verifies the OTP code and logs the user in.
-     * Uses a hardcoded OTP '1234' for demonstration.
      * @param e - Form submission event.
      */
     const handleVerifyOtp = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setIsLoading(false);
+        setError('');
 
-        if (otp === '1234') {
-            login(name || 'Customer', phone);
-        } else {
-            setError('Invalid OTP. Try 1234');
+        try {
+            const response = await fetch('/api/auth/verify-otp', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ phone, otp }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.success) {
+                login(name || 'Customer', phone);
+            } else {
+                setError(data.message || 'Invalid OTP.');
+            }
+        } catch (err) {
+            console.error('OTP verification error:', err);
+            setError('An error occurred during verification. Please try again.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -230,7 +244,7 @@ const Login: React.FC<LoginProps> = ({ tableId: initialTableId }) => {
                         <div className="text-center mb-8">
                             <h2 className="text-2xl font-bold text-[#3d312e]">Verify OTP</h2>
                             <p className="text-[#8b7e78] text-sm">Code sent to <span className="font-bold text-[#3d312e]">{phone}</span></p>
-                            <p className="text-xs text-[#a0522d] mt-2 bg-[#a0522d]/5 inline-block px-2 py-1 rounded font-medium">Demo Code: 1234</p>
+                            <p className="text-xs text-[#a0522d] mt-2 bg-[#a0522d]/5 inline-block px-2 py-1 rounded font-medium">Check messages for your code</p>
                         </div>
 
                         <div>
