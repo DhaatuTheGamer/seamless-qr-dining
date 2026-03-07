@@ -1,7 +1,8 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import Dashboard from './Dashboard';
+import Dashboard, { groupOrdersByStatus } from './Dashboard';
 import '@testing-library/jest-dom';
+import { Order } from '../../contexts/OrderContext';
 
 // Mock the OrderContext
 const mockOrders = [
@@ -36,6 +37,42 @@ Object.defineProperty(window, 'AudioContext', {
         currentTime: 0,
         destination: {},
     })),
+});
+
+describe('groupOrdersByStatus', () => {
+    it('should handle an empty array of orders', () => {
+        const result = groupOrdersByStatus([]);
+        expect(result.newOrders).toEqual([]);
+        expect(result.activeOrders).toEqual([]);
+        expect(result.completedOrders).toEqual([]);
+    });
+
+    it('should ignore orders with unexpected or invalid status strings', () => {
+        // We cast to `any` to simulate invalid data that might come from an API or legacy data
+        const invalidOrder = { id: 'invalid-1', status: 'unknown_status' as any } as Order;
+        const result = groupOrdersByStatus([invalidOrder]);
+        expect(result.newOrders).toEqual([]);
+        expect(result.activeOrders).toEqual([]);
+        expect(result.completedOrders).toEqual([]);
+    });
+
+    it('should correctly group orders by valid statuses', () => {
+        const result = groupOrdersByStatus(mockOrders as Order[]);
+
+        // pending
+        expect(result.newOrders).toHaveLength(1);
+        expect(result.newOrders[0].id).toBe('order-1');
+
+        // preparing and ready
+        expect(result.activeOrders).toHaveLength(2);
+        expect(result.activeOrders[0].id).toBe('order-2');
+        expect(result.activeOrders[1].id).toBe('order-3');
+
+        // delivered and completed
+        expect(result.completedOrders).toHaveLength(2);
+        expect(result.completedOrders[0].id).toBe('order-4');
+        expect(result.completedOrders[1].id).toBe('order-5');
+    });
 });
 
 describe('Dashboard Component', () => {
