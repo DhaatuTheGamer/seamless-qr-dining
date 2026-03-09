@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { menuItems, CATEGORIES, type MenuItem as MenuItemType } from '../../data/menu';
 import { useOrder } from '../../contexts/OrderContext';
 import MenuItem from './MenuItem';
@@ -34,7 +34,10 @@ const Menu: React.FC<MenuProps> = ({ tableId }) => {
   const [selectedItem, setSelectedItem] = useState<MenuItemType | null>(null);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
-  const filteredItems = menuItems.filter(item => item.category === activeCategory);
+  const filteredItems = useMemo(
+    () => menuItems.filter(item => item.category === activeCategory),
+    [activeCategory]
+  );
 
   if (isCartOpen) {
     return <Cart tableId={tableId} onClose={() => setIsCartOpen(false)} />;
