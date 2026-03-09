@@ -1,5 +1,6 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { createPortal } from 'react-dom';
+import { useBodyScrollLock } from '../../hooks/useBodyScrollLock';
 
 /**
  * Props for the Modal component.
@@ -34,16 +35,7 @@ interface ModalProps {
  * @returns {JSX.Element | null} The rendered modal or null if closed.
  */
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children, title, className, panelClassName }) => {
-    useEffect(() => {
-        if (isOpen) {
-            document.body.style.overflow = 'hidden';
-        } else {
-            document.body.style.overflow = 'unset';
-        }
-        return () => {
-            document.body.style.overflow = 'unset';
-        };
-    }, [isOpen]);
+    useBodyScrollLock(isOpen);
 
     if (!isOpen) return null;
 
