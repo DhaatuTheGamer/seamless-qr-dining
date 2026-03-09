@@ -279,7 +279,7 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const addToCart = useCallback((item: MenuItem, quantity: number, notes?: string) => {
         const newItem: CartItem = {
             ...item,
-            cartId: Math.random().toString(36).substr(2, 9),
+            cartId: crypto.randomUUID(),
             quantity,
             notes
         };
@@ -323,7 +323,7 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         if (cart.length === 0) return;
 
         const newOrder: Order = {
-            id: Math.random().toString(36).substr(2, 9),
+            id: crypto.randomUUID(),
             tableId,
             items: [...cart],
             status: 'pending',
@@ -368,7 +368,7 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
      */
     const requestService = useCallback((tableId: string, type: ServiceRequestType, message?: string) => {
         const newRequest: ServiceRequest = {
-            id: Math.random().toString(36).substr(2, 9),
+            id: crypto.randomUUID(),
             tableId,
             type,
             status: 'pending',
