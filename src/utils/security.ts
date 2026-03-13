@@ -69,7 +69,14 @@ export async function encryptData(data: any): Promise<string> {
         combined.set(new Uint8Array(ciphertext), iv.length);
 
         // Convert to base64
-        return btoa(Array.from(combined, byte => String.fromCharCode(byte)).join(''));
+        let binary = '';
+        const chunk = 32768; // Safe chunk size for call stack limits
+        for (let i = 0; i < combined.length; i += chunk) {
+            const subarray = combined.subarray(i, i + chunk);
+            binary += String.fromCharCode.apply(null, Array.from(subarray));
+        }
+
+        return btoa(binary);
     } catch (error) {
         console.error("Encryption failed:", error);
         throw new Error("Failed to secure data");
@@ -88,8 +95,11 @@ export async function decryptData(encryptedBase64: string): Promise<any> {
     try {
         // Convert from base64
         const binaryString = atob(encryptedBase64);
-        const combined = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
+        const len = binaryString.length;
+        const combined = new Uint8Array(len);
+
+        // Single-pass conversion loop optimized for performance over Array mapping
+        for (let i = 0; i < len; i++) {
             combined[i] = binaryString.charCodeAt(i);
         }
 
