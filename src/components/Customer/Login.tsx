@@ -57,10 +57,15 @@ const Login: React.FC<LoginProps> = ({ tableId: initialTableId }) => {
         }
         setError('');
         setIsLoading(true);
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setIsLoading(false);
-        setStep('login_otp');
+        try {
+            // Simulate API delay
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            setStep('login_otp');
+        } catch (err) {
+            setError('Failed to send OTP. Please try again.');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     /**
