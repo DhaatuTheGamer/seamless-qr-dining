@@ -79,13 +79,15 @@ const Dashboard: React.FC = () => {
     // Group orders by status
     const { newOrders, activeOrders, completedOrders } = useMemo(() => groupOrdersByStatus(orders), [orders]);
 
+    const now = Date.now();
+
     /**
      * Helper to format time elapsed since the order was placed.
      * @param timestamp - The order timestamp.
      * @returns {string} Formatted time string (e.g., "5m ago").
      */
     const getTimeAgo = (timestamp: number) => {
-        const diff = Math.floor((Date.now() - timestamp) / 60000);
+        const diff = Math.floor((now - timestamp) / 60000);
         if (diff < 1) return 'Just now';
         return `${diff}m ago`;
     };
