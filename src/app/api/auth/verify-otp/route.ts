@@ -13,8 +13,15 @@ export async function POST(request: Request) {
         }
 
         // In a real application, you would verify the OTP against a database or a third-party service like Twilio.
-        // For demonstration purposes, we accept '1234' as the valid OTP.
-        if (otp === '1234') {
+        // For demonstration purposes, we use a mock in-memory database.
+        const mockDatabase: Record<string, string> = {
+            '1234567890': '1234',
+            '0987654321': '5678',
+        };
+
+        const validOtp = mockDatabase[phone];
+
+        if (validOtp && otp === validOtp) {
             return NextResponse.json(
                 { success: true, message: 'OTP verified successfully' },
                 { status: 200 }
