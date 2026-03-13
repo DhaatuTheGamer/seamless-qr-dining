@@ -159,6 +159,23 @@ export const useOrder = () => {
 };
 
 /**
+ * Calculates the total cost and item count for a given cart.
+ *
+ * @param {CartItem[]} cart - The cart to calculate totals for.
+ * @returns {{ cartTotal: number, cartItemCount: number }} The calculated totals.
+ */
+export const calculateCartTotals = (cart: CartItem[]): { cartTotal: number; cartItemCount: number } => {
+    return cart.reduce(
+        (acc, item) => {
+            acc.cartTotal += item.price * item.quantity;
+            acc.cartItemCount += item.quantity;
+            return acc;
+        },
+        { cartTotal: 0, cartItemCount: 0 }
+    );
+};
+
+/**
  * Provider component for the OrderContext.
  * Manages cart, orders, and service requests state.
  *
@@ -178,14 +195,7 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
      * Memoized cart totals to prevent unnecessary recalculations.
      */
     const { cartTotal, cartItemCount } = useMemo(() => {
-        return cart.reduce(
-            (acc, item) => {
-                acc.cartTotal += item.price * item.quantity;
-                acc.cartItemCount += item.quantity;
-                return acc;
-            },
-            { cartTotal: 0, cartItemCount: 0 }
-        );
+        return calculateCartTotals(cart);
     }, [cart]);
 
     useEffect(() => {
