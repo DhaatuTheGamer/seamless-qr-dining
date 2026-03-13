@@ -4,14 +4,9 @@ import React from 'react';
 
 describe('AuthContext', () => {
     it('should throw an error when useAuth is used outside of AuthProvider', () => {
-        // Suppress console.error for this specific test as React will log the error boundary
-        const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-
         expect(() => {
             renderHook(() => useAuth());
         }).toThrow('useAuth must be used within an AuthProvider');
-
-        consoleSpy.mockRestore();
     });
 
     describe('with AuthProvider', () => {

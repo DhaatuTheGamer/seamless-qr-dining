@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import Cart from './Cart';
 import { useOrder } from '../../contexts/OrderContext';
 import { useAuth } from '../../contexts/AuthContext';

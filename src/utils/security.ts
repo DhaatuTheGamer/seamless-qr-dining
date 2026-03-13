@@ -5,7 +5,7 @@
 
 // In a production environment, this should be sourced from an environment variable.
 // Note: Client-side encryption is a deterrent against simple XSS but not a substitute for backend security.
-const ENCRYPTION_KEY_SECRET = "seamless-dining-secure-storage-key-v1";
+const ENCRYPTION_KEY_SECRET = process.env.NEXT_PUBLIC_ENCRYPTION_SECRET as string || "dev-only-dummy-key";
 const SALT = "dining-salt-2024";
 
 let memoizedKey: CryptoKey | null = null;

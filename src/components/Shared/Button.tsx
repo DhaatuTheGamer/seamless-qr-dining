@@ -20,7 +20,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
  *
  * @component
  * @example
- * <Button variant="primary" size="lg" onClick={() => console.log('Clicked')}>
+ * <Button variant="primary" size="lg" onClick={handleClick}>
  *   Click Me
  * </Button>
  *
