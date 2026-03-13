@@ -1,7 +1,8 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import Dashboard from './Dashboard';
+import Dashboard, { groupOrdersByStatus } from './Dashboard';
 import '@testing-library/jest-dom';
+import { Order } from '../../contexts/OrderContext';
 
 // Mock the OrderContext
 const mockOrders = [
@@ -185,5 +186,83 @@ describe('Dashboard Component', () => {
 
         // Verify no error is logged
         expect(console.error).not.toHaveBeenCalled();
+    });
+});
+
+describe('groupOrdersByStatus', () => {
+    it('groups empty orders correctly', () => {
+        const result = groupOrdersByStatus([]);
+        expect(result).toEqual({
+            newOrders: [],
+            activeOrders: [],
+            completedOrders: []
+        });
+    });
+
+    it('groups new orders (pending)', () => {
+        const orders: Partial<Order>[] = [
+            { id: '1', status: 'pending' }
+        ];
+        const result = groupOrdersByStatus(orders as Order[]);
+        expect(result.newOrders).toHaveLength(1);
+        expect(result.activeOrders).toHaveLength(0);
+        expect(result.completedOrders).toHaveLength(0);
+        expect(result.newOrders[0].id).toBe('1');
+    });
+
+    it('groups active orders (preparing, ready)', () => {
+        const orders: Partial<Order>[] = [
+            { id: '1', status: 'preparing' },
+            { id: '2', status: 'ready' }
+        ];
+        const result = groupOrdersByStatus(orders as Order[]);
+        expect(result.newOrders).toHaveLength(0);
+        expect(result.activeOrders).toHaveLength(2);
+        expect(result.completedOrders).toHaveLength(0);
+    });
+
+    it('groups completed orders (delivered, completed)', () => {
+        const orders: Partial<Order>[] = [
+            { id: '1', status: 'delivered' },
+            { id: '2', status: 'completed' }
+        ];
+        const result = groupOrdersByStatus(orders as Order[]);
+        expect(result.newOrders).toHaveLength(0);
+        expect(result.activeOrders).toHaveLength(0);
+        expect(result.completedOrders).toHaveLength(2);
+    });
+
+    it('handles mixed order statuses correctly', () => {
+        const orders: Partial<Order>[] = [
+            { id: '1', status: 'pending' },
+            { id: '2', status: 'preparing' },
+            { id: '3', status: 'ready' },
+            { id: '4', status: 'delivered' },
+            { id: '5', status: 'completed' },
+            { id: '6', status: 'pending' },
+        ];
+        const result = groupOrdersByStatus(orders as Order[]);
+
+        expect(result.newOrders).toHaveLength(2);
+        expect(result.newOrders.map(o => o.id)).toEqual(['1', '6']);
+
+        expect(result.activeOrders).toHaveLength(2);
+        expect(result.activeOrders.map(o => o.id)).toEqual(['2', '3']);
+
+        expect(result.completedOrders).toHaveLength(2);
+        expect(result.completedOrders.map(o => o.id)).toEqual(['4', '5']);
+    });
+
+    it('ignores orders with unknown statuses', () => {
+        const orders: Partial<Order>[] = [
+            { id: '1', status: 'unknown' as any },
+            { id: '2', status: 'pending' }
+        ];
+        const result = groupOrdersByStatus(orders as Order[]);
+
+        expect(result.newOrders).toHaveLength(1);
+        expect(result.newOrders[0].id).toBe('2');
+        expect(result.activeOrders).toHaveLength(0);
+        expect(result.completedOrders).toHaveLength(0);
     });
 });
