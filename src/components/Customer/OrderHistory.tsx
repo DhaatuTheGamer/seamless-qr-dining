@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useOrder } from '../../contexts/OrderContext';
 import Drawer from '../Shared/Drawer';
 
@@ -25,7 +25,9 @@ const OrderHistory: React.FC<OrderHistoryProps> = ({ onClose }) => {
     const { orders } = useOrder();
 
     // Sort orders by timestamp descending
-    const sortedOrders = [...orders].sort((a, b) => b.timestamp - a.timestamp);
+    const sortedOrders = useMemo(() => {
+        return [...orders].sort((a, b) => b.timestamp - a.timestamp);
+    }, [orders]);
 
     /**
      * Gets the CSS color classes for a given order status.
