@@ -1,10 +1,10 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import CartFloatingBar from './CartFloatingBar';
-import { useOrder } from '../../contexts/OrderContext';
+import CartFloatingBar from '../../../src/components/Customer/CartFloatingBar';
+import { useOrder } from '../../../src/contexts/OrderContext';
 
 // Mock the useOrder hook
-jest.mock('../../contexts/OrderContext', () => ({
+jest.mock('../../../src/contexts/OrderContext', () => ({
   useOrder: jest.fn(),
 }));
 

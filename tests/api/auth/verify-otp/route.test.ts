@@ -1,4 +1,4 @@
-import { POST } from './route';
+import { POST } from '../../../../src/app/api/auth/verify-otp/route';
 
 // Mock NextResponse
 jest.mock('next/server', () => ({
@@ -24,7 +24,7 @@ describe('POST /api/auth/verify-otp', () => {
     });
 
     it('returns 200 if otp is valid', async () => {
-        const mockJson = jest.fn().mockResolvedValue({ phone: '123', otp: '1234' });
+        const mockJson = jest.fn().mockResolvedValue({ phone: '1234567890', otp: '1234' });
         const req = { json: mockJson } as any;
 
         const res = await POST(req);

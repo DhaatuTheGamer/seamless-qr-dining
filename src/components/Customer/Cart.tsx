@@ -66,7 +66,7 @@ const Cart: React.FC<CartProps> = ({ onClose, tableId }) => {
                     </div>
                     <h2 className="text-3xl font-heading font-bold text-[#3d312e] mb-3">Order Placed!</h2>
                     <p className="text-gray-500 mb-10 leading-relaxed max-w-xs mx-auto">
-                        Your order has been sent to the kitchen. We'll have it ready shortly.
+                        Your order has been sent to the kitchen. We&apos;ll have it ready shortly.
                     </p>
                     <Button
                         onClick={onClose}
@@ -114,7 +114,7 @@ const Cart: React.FC<CartProps> = ({ onClose, tableId }) => {
                                             <div className="flex-1">
                                                 <h4 className="font-bold text-[#3d312e] text-lg">{item.name}</h4>
                                                 <p className="text-sm text-gray-400 line-clamp-1">{item.description}</p>
-                                                {item.notes && <p className="text-xs text-[#a0522d] mt-1 italic">"{item.notes}"</p>}
+                                                {item.notes && <p className="text-xs text-[#a0522d] mt-1 italic">&quot;{item.notes}&quot;</p>}
                                             </div>
                                             <div className="text-right">
                                                 <div className="font-bold text-[#3d312e] text-lg mb-2">${(item.price * item.quantity).toFixed(2)}</div>

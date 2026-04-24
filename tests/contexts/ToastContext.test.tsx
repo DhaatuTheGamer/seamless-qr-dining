@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
-import { ToastProvider, useToast } from './ToastContext';
+import { ToastProvider, useToast } from '../../src/contexts/ToastContext';
 import React from 'react';
 
 describe('ToastContext', () => {

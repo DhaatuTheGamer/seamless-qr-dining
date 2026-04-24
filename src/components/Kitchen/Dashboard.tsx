@@ -38,6 +38,13 @@ export const groupOrdersByStatus = (orders: Order[]) => {
 const Dashboard: React.FC = () => {
     const { orders, updateOrderStatus } = useOrder();
     const prevOrdersLength = useRef(orders.length);
+    const [currentTime, setCurrentTime] = useState(() => Date.now());
+
+    // Update the clock every 30 seconds so "time ago" labels refresh
+    useEffect(() => {
+        const interval = setInterval(() => setCurrentTime(Date.now()), 30_000);
+        return () => clearInterval(interval);
+    }, []);
 
     /**
      * Plays a notification sound for new orders using the Web Audio API.
@@ -79,15 +86,13 @@ const Dashboard: React.FC = () => {
     // Group orders by status
     const { newOrders, activeOrders, completedOrders } = useMemo(() => groupOrdersByStatus(orders), [orders]);
 
-    const now = Date.now();
-
     /**
      * Helper to format time elapsed since the order was placed.
      * @param timestamp - The order timestamp.
      * @returns {string} Formatted time string (e.g., "5m ago").
      */
     const getTimeAgo = (timestamp: number) => {
-        const diff = Math.floor((now - timestamp) / 60000);
+        const diff = Math.floor((currentTime - timestamp) / 60000);
         if (diff < 1) return 'Just now';
         return `${diff}m ago`;
     };

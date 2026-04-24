@@ -120,7 +120,7 @@ const Login: React.FC<LoginProps> = ({ tableId: initialTableId }) => {
                                 Welcome to Seamless<br />Dining.
                             </h1>
                             <h2 className="text-2xl font-bold text-[#3d312e] tracking-tight">
-                                Let's Get Started.
+                                Let&apos;s Get Started.
                             </h2>
                             <p className="text-[#8b7e78] text-sm mt-4 leading-relaxed max-w-xs mx-auto">
                                 Enter your table number to view the menu and order.

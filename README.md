@@ -31,6 +31,7 @@ This application bridges the gap between customers and kitchen staff.
 - **State Management**: React Context API (`OrderContext`, `AuthContext`).
 - **Animations**: [Framer Motion](https://www.framer.com/motion/).
 - **Testing**: Jest and React Testing Library.
+- **CI/CD**: GitHub Actions (lint, test, build).
 
 ## 🚀 Getting Started
 
@@ -44,7 +45,7 @@ Follow these instructions to set up the project locally.
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/DhaatuTheGamer/seamless-qr-dining
+   git clone https://github.com/dhaatrik/seamless-qr-dining
    cd seamless-qr-dining
    ```
 
@@ -64,28 +65,32 @@ Follow these instructions to set up the project locally.
 
 ## 📁 Project Structure
 
-The project is organized as follows within the `src` directory:
+The project is organized as follows:
 
-- **`app/`**: Next.js App Router pages.
+- **`src/app/`**: Next.js App Router pages.
   - `page.tsx`: The main customer landing page (Login/Menu).
   - `kitchen/page.tsx`: The kitchen dashboard page.
-- **`components/`**: React components.
+  - `api/auth/verify-otp/route.ts`: OTP verification API route.
+- **`src/components/`**: React components.
   - `Customer/`: Components specific to the customer interface (Menu, Cart, ItemDetail).
   - `Kitchen/`: Components specific to the kitchen interface (Dashboard).
-  - `Shared/`: Reusable UI components (Button, Card, Modal).
-- **`contexts/`**: Global state management.
+  - `Shared/`: Reusable UI components (Button, Card, Modal, Drawer).
+- **`src/contexts/`**: Global state management.
   - `AuthContext.tsx`: Manages user authentication (guest/login).
   - `OrderContext.tsx`: Handles cart state, placed orders, and service requests.
   - `ToastContext.tsx`: Manages global notifications.
-- **`data/`**: Static data files.
+- **`src/data/`**: Static data files.
   - `menu.ts`: Defines the menu items and categories.
+- **`src/hooks/`**: Custom React hooks.
+- **`src/utils/`**: Utility functions (encryption/security).
+- **`tests/`**: All unit and benchmark test files, mirroring the `src/` structure.
 
 ## 🧪 Testing
 
 Run the test suite to ensure everything is working correctly:
 
 ```bash
-npm test
+npm run test
 ```
 
 ## 📝 Documentation
@@ -94,7 +99,11 @@ The codebase is fully documented using TSDoc/JSDoc. You can hover over functions
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions are welcome! Please read the [Contributing Guidelines](CONTRIBUTING.md) before submitting a Pull Request.
+
+## 👤 Author
+
+**Dhaatrik Chowdhury** — [GitHub](https://github.com/dhaatrik)
 
 ## 📄 License
 

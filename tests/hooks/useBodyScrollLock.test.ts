@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react';
-import { useBodyScrollLock } from './useBodyScrollLock';
+import { useBodyScrollLock } from '../../src/hooks/useBodyScrollLock';
 
 describe('useBodyScrollLock', () => {
     let originalOverflow: string;
