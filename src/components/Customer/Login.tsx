@@ -156,7 +156,7 @@ const Login: React.FC<LoginProps> = ({ tableId: initialTableId }) => {
                                 <div className="w-full border-t border-gray-300"></div>
                             </div>
                             <div className="relative flex justify-center text-xs uppercase tracking-wider font-bold">
-                                <span className="px-4 bg-transparent text-gray-500 backdrop-blur-xl bg-white/50">OR</span>
+                                <span className="px-4 text-gray-500 backdrop-blur-xl bg-white/50">OR</span>
                             </div>
                         </div>
 
