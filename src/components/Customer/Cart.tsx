@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import Image from 'next/image';
 import { useOrder } from '../../contexts/OrderContext';
 import { useAuth } from '../../contexts/AuthContext';
 import Button from '../Shared/Button';
@@ -108,8 +109,8 @@ const Cart: React.FC<CartProps> = ({ onClose, tableId }) => {
                                 <div className="space-y-6">
                                     {cart.map(item => (
                                         <div key={item.cartId} className="flex gap-4 items-center pb-6 border-b border-gray-50 last:border-0 last:pb-0">
-                                            <div className="w-20 h-20 rounded-xl overflow-hidden shrink-0">
-                                                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                            <div className="relative w-20 h-20 rounded-xl overflow-hidden shrink-0">
+                                                <Image src={item.image} alt={item.name} fill className="object-cover" sizes="80px" />
                                             </div>
                                             <div className="flex-1">
                                                 <h4 className="font-bold text-[#3d312e] text-lg">{item.name}</h4>
