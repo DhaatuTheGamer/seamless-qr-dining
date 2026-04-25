@@ -7,6 +7,7 @@ jest.mock('../../../src/contexts/OrderContext', () => ({
   useOrder: () => ({
     isCartOpen: false,
     setIsCartOpen: jest.fn(),
+    unavailableItems: [],
   }),
 }));
 

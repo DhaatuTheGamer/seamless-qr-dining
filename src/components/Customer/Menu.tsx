@@ -29,7 +29,7 @@ interface MenuProps {
  * @returns {JSX.Element} The rendered menu component.
  */
 const Menu: React.FC<MenuProps> = ({ tableId }) => {
-  const { isCartOpen, setIsCartOpen } = useOrder();
+  const { isCartOpen, setIsCartOpen, unavailableItems } = useOrder();
   const [activeCategory, setActiveCategory] = useState('starters');
   const [selectedItem, setSelectedItem] = useState<MenuItemType | null>(null);
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
@@ -96,6 +96,7 @@ const Menu: React.FC<MenuProps> = ({ tableId }) => {
               key={item.id}
               item={item}
               onAdd={() => setSelectedItem(item)}
+              isUnavailable={unavailableItems.includes(item.id)}
             />
           ))}
         </motion.div>

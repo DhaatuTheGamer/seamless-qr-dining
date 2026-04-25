@@ -13,6 +13,8 @@ interface MenuItemProps {
     item: MenuItemType;
     /** Callback when the user clicks the "Add to Cart" button or the card itself. */
     onAdd: () => void;
+    /** Whether the item is currently out of stock. */
+    isUnavailable?: boolean;
 }
 
 /**
@@ -27,7 +29,7 @@ interface MenuItemProps {
  * @param {MenuItemProps} props - The component props.
  * @returns {JSX.Element} The rendered menu item card.
  */
-const MenuItem: React.FC<MenuItemProps> = ({ item, onAdd }) => {
+const MenuItem: React.FC<MenuItemProps> = ({ item, onAdd, isUnavailable = false }) => {
     return (
         <motion.div
             whileHover={{ y: -5 }}
@@ -35,8 +37,8 @@ const MenuItem: React.FC<MenuItemProps> = ({ item, onAdd }) => {
             className="h-full"
         >
             <Card
-                className="overflow-hidden p-0 h-full flex flex-col group border-0 shadow-md hover:shadow-xl transition-all duration-300 rounded-2xl bg-white"
-                onClick={onAdd}
+                className={`overflow-hidden p-0 h-full flex flex-col group border-0 shadow-md hover:shadow-xl transition-all duration-300 rounded-2xl bg-white ${isUnavailable ? 'opacity-70 grayscale pointer-events-none' : ''}`}
+                onClick={isUnavailable ? undefined : onAdd}
             >
                 <div className="relative h-64 overflow-hidden">
                     <Image
@@ -63,14 +65,17 @@ const MenuItem: React.FC<MenuItemProps> = ({ item, onAdd }) => {
 
                         <Button
                             fullWidth
+                            disabled={isUnavailable}
                             onClick={(e) => {
                                 e.stopPropagation();
-                                onAdd();
+                                if (!isUnavailable) onAdd();
                             }}
-                            className="bg-[#a0522d]/90 hover:bg-[#8b4513] text-white border-0 py-3 rounded-xl font-bold shadow-lg shadow-[#a0522d]/20 flex items-center justify-center gap-2"
+                            className={isUnavailable 
+                                ? "bg-gray-400 text-white border-0 py-3 rounded-xl font-bold flex items-center justify-center gap-2 cursor-not-allowed"
+                                : "bg-[#a0522d]/90 hover:bg-[#8b4513] text-white border-0 py-3 rounded-xl font-bold shadow-lg shadow-[#a0522d]/20 flex items-center justify-center gap-2"}
                         >
-                            <span>Add to Cart</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            <span>{isUnavailable ? 'Sold Out' : 'Add to Cart'}</span>
+                            {!isUnavailable && <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>}
                         </Button>
                     </div>
                 </div>
