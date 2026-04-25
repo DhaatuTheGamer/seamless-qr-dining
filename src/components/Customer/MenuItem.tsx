@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 import type { MenuItem as MenuItemType } from '../../data/menu';
 import Card from '../Shared/Card';
 import Button from '../Shared/Button';
@@ -38,11 +39,12 @@ const MenuItem: React.FC<MenuItemProps> = ({ item, onAdd }) => {
                 onClick={onAdd}
             >
                 <div className="relative h-64 overflow-hidden">
-                    <img
+                    <Image
                         src={item.image}
                         alt={item.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        loading="lazy"
+                        fill
+                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        sizes="(max-width: 768px) 100vw, 300px"
                     />
                 </div>
 

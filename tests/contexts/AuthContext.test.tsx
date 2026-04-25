@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
-import { AuthProvider, useAuth } from './AuthContext';
+import { AuthProvider, useAuth } from '../../src/contexts/AuthContext';
 import React from 'react';
 
 describe('AuthContext', () => {

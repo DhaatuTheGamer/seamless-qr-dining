@@ -1,5 +1,5 @@
-import { Order } from '../../contexts/OrderContext';
-import { groupOrdersByStatus } from './Dashboard';
+import { Order } from '../../../src/contexts/OrderContext';
+import { groupOrdersByStatus } from '../../../src/components/Kitchen/Dashboard';
 
 describe('Dashboard Performance Benchmark', () => {
     const generateOrders = (count: number): Order[] => {
@@ -15,11 +15,11 @@ describe('Dashboard Performance Benchmark', () => {
         }));
     };
 
-    const orders = generateOrders(10000); // 10k orders
+    const orders = generateOrders(10000);
 
     test('Naive filtering (3 passes)', () => {
         const start = performance.now();
-        for (let i = 0; i < 1000; i++) { // Run 1000 times
+        for (let i = 0; i < 1000; i++) {
              orders.filter(o => o.status === 'pending');
              orders.filter(o => o.status === 'preparing' || o.status === 'ready');
              orders.filter(o => o.status === 'delivered' || o.status === 'completed');

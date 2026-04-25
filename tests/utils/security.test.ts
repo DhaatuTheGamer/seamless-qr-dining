@@ -1,4 +1,4 @@
-import { encryptData, decryptData } from './security';
+import { encryptData, decryptData } from '../../src/utils/security';
 
 describe('encryptData', () => {
     it('returns an empty string when data is null', async () => {

@@ -1,21 +1,21 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Cart from './Cart';
-import { useOrder } from '../../contexts/OrderContext';
-import { useAuth } from '../../contexts/AuthContext';
+import Cart from '../../../src/components/Customer/Cart';
+import { useOrder } from '../../../src/contexts/OrderContext';
+import { useAuth } from '../../../src/contexts/AuthContext';
 
 // Mock contexts
-jest.mock('../../contexts/OrderContext', () => ({
+jest.mock('../../../src/contexts/OrderContext', () => ({
     useOrder: jest.fn(),
 }));
 
-jest.mock('../../contexts/AuthContext', () => ({
+jest.mock('../../../src/contexts/AuthContext', () => ({
     useAuth: jest.fn(),
 }));
 
 // Mock Modal since it uses Portals which can be problematic in JSDOM
-jest.mock('../Shared/Modal', () => {
+jest.mock('../../../src/components/Shared/Modal', () => {
     return ({ isOpen, children, title }: any) => {
         if (!isOpen) return null;
         return (

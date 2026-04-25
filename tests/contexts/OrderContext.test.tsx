@@ -1,11 +1,11 @@
 import { renderHook, act, render, screen, waitFor } from '@testing-library/react';
-import { OrderProvider, useOrder } from './OrderContext';
+import { OrderProvider, useOrder } from '../../src/contexts/OrderContext';
 import React, { useState } from 'react';
-import { encryptData, decryptData } from '../utils/security';
+import { encryptData, decryptData } from '../../src/utils/security';
 
 // Mock useToast with stable reference
 const mockAddToast = jest.fn();
-jest.mock('./ToastContext', () => ({
+jest.mock('../../src/contexts/ToastContext', () => ({
   useToast: () => ({
     addToast: mockAddToast,
   }),

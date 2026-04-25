@@ -1,15 +1,15 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Login from './Login';
-import { useAuth } from '../../contexts/AuthContext';
+import Login from '../../../src/components/Customer/Login';
+import { useAuth } from '../../../src/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 
 const mockLogin = jest.fn();
 const mockLoginAsGuest = jest.fn();
 const mockRouterPush = jest.fn();
 
-jest.mock('../../contexts/AuthContext', () => ({
+jest.mock('../../../src/contexts/AuthContext', () => ({
     useAuth: jest.fn(),
 }));
 

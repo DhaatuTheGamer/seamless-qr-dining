@@ -1,15 +1,15 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import { useOrder } from '../../contexts/OrderContext';
+import { useOrder } from '../../../src/contexts/OrderContext';
 
 // We mock OrderHistory component dynamically to test BEFORE and AFTER
 // We'll require it to test before and after behavior.
 
-jest.mock('../../contexts/OrderContext', () => ({
+jest.mock('../../../src/contexts/OrderContext', () => ({
   useOrder: jest.fn(),
 }));
 
-jest.mock('../Shared/Drawer', () => {
+jest.mock('../../../src/components/Shared/Drawer', () => {
   return function DummyDrawer({ children }: { children: React.ReactNode }) {
     return <div data-testid="drawer">{children}</div>;
   };

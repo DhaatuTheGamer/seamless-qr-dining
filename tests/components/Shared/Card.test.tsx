@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import Card from './Card';
+import Card from '../../../src/components/Shared/Card';
 
 describe('Card Component', () => {
     it('renders its children correctly', () => {
@@ -15,7 +15,6 @@ describe('Card Component', () => {
 
     it('applies default card styling when glass is false', () => {
         const { container } = render(<Card>Content</Card>);
-        // The div is the first child of the container
         const cardDiv = container.firstChild as HTMLElement;
         expect(cardDiv).toHaveClass('card');
         expect(cardDiv).not.toHaveClass('glass-panel');

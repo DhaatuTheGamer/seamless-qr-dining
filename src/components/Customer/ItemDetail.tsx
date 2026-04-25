@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Image from 'next/image';
 import type { MenuItem } from '../../data/menu';
 import { useOrder } from '../../contexts/OrderContext';
 import Modal from '../Shared/Modal';
@@ -82,8 +83,8 @@ const ItemDetail: React.FC<ItemDetailProps> = ({ item, onClose }) => {
                 {/* Header Image */}
                 <div className="flex justify-center pt-8 pb-4 relative z-10">
                     <div className="w-40 h-40 rounded-full p-1 bg-gradient-to-b from-[#a0522d] to-transparent shadow-2xl">
-                        <div className="w-full h-full rounded-full overflow-hidden border-4 border-[#1a1a1a]">
-                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                        <div className="relative w-full h-full rounded-full overflow-hidden border-4 border-[#1a1a1a]">
+                            <Image src={item.image} alt={item.name} fill className="object-cover" sizes="160px" />
                         </div>
                     </div>
                 </div>

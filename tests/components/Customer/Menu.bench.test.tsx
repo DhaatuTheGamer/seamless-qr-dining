@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import Menu from './Menu';
+import Menu from '../../../src/components/Customer/Menu';
 
 // Mock the OrderContext
-jest.mock('../../contexts/OrderContext', () => ({
+jest.mock('../../../src/contexts/OrderContext', () => ({
   useOrder: () => ({
     isCartOpen: false,
     setIsCartOpen: jest.fn(),
@@ -18,11 +18,11 @@ jest.mock('framer-motion', () => ({
 }));
 
 // Mock child components that are not the focus of this benchmark
-jest.mock('./VirtualWaiter', () => () => <div data-testid="virtual-waiter" />);
-jest.mock('./CartFloatingBar', () => () => <div data-testid="cart-floating-bar" />);
-jest.mock('./ItemDetail', () => () => <div data-testid="item-detail" />);
-jest.mock('./OrderHistory', () => () => <div data-testid="order-history" />);
-jest.mock('./Cart', () => () => <div data-testid="cart" />);
+jest.mock('../../../src/components/Customer/VirtualWaiter', () => () => <div data-testid="virtual-waiter" />);
+jest.mock('../../../src/components/Customer/CartFloatingBar', () => () => <div data-testid="cart-floating-bar" />);
+jest.mock('../../../src/components/Customer/ItemDetail', () => () => <div data-testid="item-detail" />);
+jest.mock('../../../src/components/Customer/OrderHistory', () => () => <div data-testid="order-history" />);
+jest.mock('../../../src/components/Customer/Cart', () => () => <div data-testid="cart" />);
 
 describe('Menu Performance Benchmark', () => {
   it('measures time to render menu items', async () => {

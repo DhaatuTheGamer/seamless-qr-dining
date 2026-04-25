@@ -1,20 +1,20 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import OrderHistory from './OrderHistory';
-import { useOrder } from '../../contexts/OrderContext';
+import OrderHistory from '../../../src/components/Customer/OrderHistory';
+import { useOrder } from '../../../src/contexts/OrderContext';
 
 // Mock contexts
-jest.mock('../../contexts/OrderContext', () => ({
+jest.mock('../../../src/contexts/OrderContext', () => ({
     useOrder: jest.fn(),
 }));
 
 // Mock useBodyScrollLock
-jest.mock('../../hooks/useBodyScrollLock', () => ({
+jest.mock('../../../src/hooks/useBodyScrollLock', () => ({
     useBodyScrollLock: jest.fn(),
 }));
 
 // Mock Drawer
-jest.mock('../Shared/Drawer', () => {
+jest.mock('../../../src/components/Shared/Drawer', () => {
     return ({ isOpen, onClose, children, title }: any) => {
         if (!isOpen) return null;
         return (
