@@ -1,3 +1,24 @@
+export interface MenuOptionChoice {
+  /** The name of the choice. */
+  name: string;
+  /** Optional additional cost for this choice. */
+  price?: number;
+}
+
+/**
+ * Represents an option category for a menu item.
+ */
+export interface MenuOption {
+  /** Unique identifier for the option. */
+  id: string;
+  /** The display name of the option (e.g., 'Cook Level', 'Add-ons'). */
+  name: string;
+  /** Whether the user can select one ('select') or multiple ('checkbox') choices. */
+  type: 'select' | 'checkbox';
+  /** The available choices for this option. */
+  choices: MenuOptionChoice[];
+}
+
 /**
  * Represents a single item on the menu.
  * @interface
@@ -19,6 +40,8 @@ export interface MenuItem {
   dietary?: ('vegan' | 'gf' | 'alcoholic' | 'spicy')[];
   /** Indicates whether the item is currently available for order. */
   available: boolean;
+  /** Optional customizations available for this item. */
+  options?: MenuOption[];
 }
 
 /**
@@ -57,7 +80,31 @@ export const menuItems: MenuItem[] = [
     price: 24,
     category: 'mains',
     image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80',
-    available: true
+    available: true,
+    options: [
+      {
+        id: 'cookLevel',
+        name: 'Cook Level',
+        type: 'select',
+        choices: [{ name: 'Medium Rare' }, { name: 'Medium' }, { name: 'Medium Well' }]
+      },
+      {
+        id: 'side',
+        name: 'Side',
+        type: 'select',
+        choices: [{ name: 'French Fries' }, { name: 'Sweet Potato Fries' }, { name: 'Side Salad' }]
+      },
+      {
+        id: 'addons',
+        name: 'Add-ons',
+        type: 'checkbox',
+        choices: [
+          { name: 'Extra Truffle Aioli', price: 1.00 },
+          { name: 'Applewood Smoked Bacon', price: 2.00 },
+          { name: 'Avocado', price: 1.50 }
+        ]
+      }
+    ]
   },
   {
     id: 'm2',
