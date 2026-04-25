@@ -215,6 +215,7 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         let isCancelled = false;
 
         const initData = async () => {
+            if (typeof window === 'undefined') return;
             try {
                 const savedOrders = localStorage.getItem('orders');
                 if (savedOrders && !isCancelled) {
@@ -266,7 +267,7 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
     // Persist orders
     useEffect(() => {
-        if (isInitialized) {
+        if (isInitialized && typeof window !== 'undefined') {
             const persistOrders = async () => {
                 const encrypted = await encryptData(orders);
                 localStorage.setItem('orders', encrypted);
@@ -277,7 +278,7 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
     // Persist service requests
     useEffect(() => {
-        if (isInitialized) {
+        if (isInitialized && typeof window !== 'undefined') {
             const persistRequests = async () => {
                 const encrypted = await encryptData(serviceRequests);
                 localStorage.setItem('serviceRequests', encrypted);
@@ -288,13 +289,13 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
     // Persist new states
     useEffect(() => {
-        if (isInitialized) {
+        if (isInitialized && typeof window !== 'undefined') {
             localStorage.setItem('unavailableItems', JSON.stringify(unavailableItems));
         }
     }, [unavailableItems, isInitialized]);
 
     useEffect(() => {
-        if (isInitialized) {
+        if (isInitialized && typeof window !== 'undefined') {
             localStorage.setItem('isKitchenSlammed', isKitchenSlammed.toString());
         }
     }, [isKitchenSlammed, isInitialized]);
