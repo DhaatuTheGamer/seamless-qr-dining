@@ -28,7 +28,7 @@ const mockOrders: OrderContextModule.Order[] = [
     {
         id: '1',
         tableId: '5',
-        items: [{ id: 'm1', name: 'Burger', quantity: 2, price: 10, category: 'mains', image: '', available: true, cartId: 'c1' }],
+        items: [{ id: 'm1', name: 'Burger', description: 'desc', quantity: 2, price: 10, category: 'mains', image: '', available: true, cartId: 'c1' }],
         status: 'pending',
         timestamp: Date.now() - 60000, // 1 minute ago
         total: 20,
@@ -37,7 +37,7 @@ const mockOrders: OrderContextModule.Order[] = [
     {
         id: '2',
         tableId: '3',
-        items: [{ id: 'd1', name: 'Cake', quantity: 1, price: 5, category: 'desserts', image: '', available: true, cartId: 'c2' }],
+        items: [{ id: 'd1', name: 'Cake', description: 'desc', quantity: 1, price: 5, category: 'desserts', image: '', available: true, cartId: 'c2' }],
         status: 'preparing',
         timestamp: Date.now() - 120000, // 2 minutes ago
         total: 5,
@@ -46,7 +46,7 @@ const mockOrders: OrderContextModule.Order[] = [
     {
         id: '3',
         tableId: '2',
-        items: [{ id: 's1', name: 'Soup', quantity: 1, price: 8, category: 'starters', image: '', available: true, cartId: 'c3' }],
+        items: [{ id: 's1', name: 'Soup', description: 'desc', quantity: 1, price: 8, category: 'starters', image: '', available: true, cartId: 'c3' }],
         status: 'completed',
         timestamp: Date.now() - 300000, // 5 minutes ago
         total: 8,
