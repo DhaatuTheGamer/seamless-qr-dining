@@ -55,6 +55,8 @@ const mockOrders: OrderContextModule.Order[] = [
 ];
 
 const mockUpdateOrderStatus = jest.fn();
+const mockToggleKitchenSlammed = jest.fn();
+const mockToggleItemAvailability = jest.fn();
 
 // We need to mock useOrder to control the orders
 jest.mock('../../../src/contexts/OrderContext', () => {
@@ -72,7 +74,11 @@ describe('Dashboard Component', () => {
         jest.clearAllMocks();
         mockUseOrder.mockReturnValue({
             orders: mockOrders,
-            updateOrderStatus: mockUpdateOrderStatus
+            updateOrderStatus: mockUpdateOrderStatus,
+            isKitchenSlammed: false,
+            unavailableItems: [],
+            toggleKitchenSlammed: mockToggleKitchenSlammed,
+            toggleItemAvailability: mockToggleItemAvailability
         });
     });
 
@@ -151,7 +157,11 @@ describe('Dashboard Component', () => {
         
         mockUseOrder.mockReturnValue({
             orders: [...mockOrders, readyOrder],
-            updateOrderStatus: mockUpdateOrderStatus
+            updateOrderStatus: mockUpdateOrderStatus,
+            isKitchenSlammed: false,
+            unavailableItems: [],
+            toggleKitchenSlammed: mockToggleKitchenSlammed,
+            toggleItemAvailability: mockToggleItemAvailability
         });
 
         render(
@@ -182,7 +192,11 @@ describe('Dashboard Component', () => {
         
         mockUseOrder.mockReturnValue({
             orders: newMockOrders,
-            updateOrderStatus: mockUpdateOrderStatus
+            updateOrderStatus: mockUpdateOrderStatus,
+            isKitchenSlammed: false,
+            unavailableItems: [],
+            toggleKitchenSlammed: mockToggleKitchenSlammed,
+            toggleItemAvailability: mockToggleItemAvailability
         });
         
         rerender(
@@ -193,5 +207,56 @@ describe('Dashboard Component', () => {
         
         // At this point AudioContext should have been instantiated to play the sound
         expect((window as any).AudioContext).toHaveBeenCalled();
+    });
+
+    it('filters orders by search query', () => {
+        render(
+            <ToastProvider>
+                <Dashboard />
+            </ToastProvider>
+        );
+
+        // Initially 3 orders
+        expect(screen.getByText('Order #1')).toBeInTheDocument();
+        expect(screen.getByText('Order #2')).toBeInTheDocument();
+        expect(screen.getByText('Order #3')).toBeInTheDocument();
+
+        // Search for table 5 (Order #1)
+        const searchInput = screen.getByPlaceholderText('Search Table or Order #');
+        fireEvent.change(searchInput, { target: { value: '5' } });
+
+        expect(screen.getByText('Order #1')).toBeInTheDocument();
+        expect(screen.queryByText('Order #2')).not.toBeInTheDocument();
+        expect(screen.queryByText('Order #3')).not.toBeInTheDocument();
+    });
+
+    it('toggles batch view and aggregates items', () => {
+        render(
+            <ToastProvider>
+                <Dashboard />
+            </ToastProvider>
+        );
+
+        const batchBtn = screen.getByText('Batch View');
+        fireEvent.click(batchBtn);
+
+        expect(screen.getByText('Active Batch Aggregation')).toBeInTheDocument();
+        // Cake is in active orders
+        expect(screen.getByText('Cake')).toBeInTheDocument();
+        // Soup is completed, Burger is new, so they shouldn't be in the active batch
+        expect(screen.queryByText('Soup')).not.toBeInTheDocument();
+    });
+
+    it('calls toggleKitchenSlammed when throttle button is clicked', () => {
+        render(
+            <ToastProvider>
+                <Dashboard />
+            </ToastProvider>
+        );
+
+        const throttleBtn = screen.getByText('Kitchen Normal');
+        fireEvent.click(throttleBtn);
+
+        expect(mockToggleKitchenSlammed).toHaveBeenCalled();
     });
 });

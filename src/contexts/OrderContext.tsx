@@ -140,6 +140,17 @@ interface OrderContextType {
      * @param isOpen - True to open, false to close.
      */
     setIsCartOpen: (isOpen: boolean) => void;
+    /** List of item IDs that are currently out of stock. */
+    unavailableItems: string[];
+    /** Whether the kitchen is exceptionally busy. */
+    isKitchenSlammed: boolean;
+    /**
+     * Toggles an item's availability (86ing).
+     * @param itemId - The item ID to toggle.
+     */
+    toggleItemAvailability: (itemId: string) => void;
+    /** Toggles the kitchen slammed mode. */
+    toggleKitchenSlammed: () => void;
 }
 
 const OrderContext = createContext<OrderContextType | undefined>(undefined);
@@ -190,6 +201,8 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
     const [isInitialized, setIsInitialized] = useState(false);
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const [unavailableItems, setUnavailableItems] = useState<string[]>([]);
+    const [isKitchenSlammed, setIsKitchenSlammed] = useState(false);
 
     /**
      * Memoized cart totals to prevent unnecessary recalculations.
@@ -232,6 +245,16 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
                         }
                     }
                 }
+
+                const savedUnavailable = localStorage.getItem('unavailableItems');
+                if (savedUnavailable && !isCancelled) {
+                    try { setUnavailableItems(JSON.parse(savedUnavailable)); } catch (e) {}
+                }
+
+                const savedSlammed = localStorage.getItem('isKitchenSlammed');
+                if (savedSlammed && !isCancelled) {
+                    setIsKitchenSlammed(savedSlammed === 'true');
+                }
             } finally {
                 if (!isCancelled) setIsInitialized(true);
             }
@@ -263,6 +286,19 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         }
     }, [serviceRequests, isInitialized]);
 
+    // Persist new states
+    useEffect(() => {
+        if (isInitialized) {
+            localStorage.setItem('unavailableItems', JSON.stringify(unavailableItems));
+        }
+    }, [unavailableItems, isInitialized]);
+
+    useEffect(() => {
+        if (isInitialized) {
+            localStorage.setItem('isKitchenSlammed', isKitchenSlammed.toString());
+        }
+    }, [isKitchenSlammed, isInitialized]);
+
     // Sync across tabs
     useEffect(() => {
         const handleStorageChange = async (e: StorageEvent) => {
@@ -273,6 +309,12 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
             if (e.key === 'serviceRequests' && e.newValue) {
                 const decrypted = await decryptData(e.newValue);
                 if (decrypted) setServiceRequests(decrypted);
+            }
+            if (e.key === 'unavailableItems' && e.newValue) {
+                try { setUnavailableItems(JSON.parse(e.newValue)); } catch (e) {}
+            }
+            if (e.key === 'isKitchenSlammed' && e.newValue) {
+                setIsKitchenSlammed(e.newValue === 'true');
             }
         };
 
@@ -397,6 +439,16 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         setServiceRequests(prev => prev.filter(req => req.id !== requestId));
     }, []);
 
+    /** Toggles an item's availability. */
+    const toggleItemAvailability = useCallback((itemId: string) => {
+        setUnavailableItems(prev => prev.includes(itemId) ? prev.filter(id => id !== itemId) : [...prev, itemId]);
+    }, []);
+
+    /** Toggles kitchen slammed mode. */
+    const toggleKitchenSlammed = useCallback(() => {
+        setIsKitchenSlammed(prev => !prev);
+    }, []);
+
     const contextValue = useMemo(() => ({
         cart,
         cartTotal,
@@ -413,7 +465,11 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         requestService,
         resolveServiceRequest,
         isCartOpen,
-        setIsCartOpen
+        setIsCartOpen,
+        unavailableItems,
+        isKitchenSlammed,
+        toggleItemAvailability,
+        toggleKitchenSlammed
     }), [
         cart,
         cartTotal,
@@ -429,7 +485,11 @@ export const OrderProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         toggleOrderPayment,
         requestService,
         resolveServiceRequest,
-        isCartOpen
+        isCartOpen,
+        unavailableItems,
+        isKitchenSlammed,
+        toggleItemAvailability,
+        toggleKitchenSlammed
     ]);
 
     return (
